@@ -1,5 +1,7 @@
 # Geospatial Utility Functions for Hydraulics and Morphodynamics
 
+* TOC {:toc}
+
 # Introduction
 `geo_utils` provides *Python3* functions for many sorts of river-related analyses with geospatial data. The package is intended as support material for the lecture [*Python programming for Water Resources Engineering and Research*](https://hydro-informatics.github.io/hy_ppwrm.html), where primarily *conda* environments are used. Even though `geo_utils` basically works in all *Python3* environments, make sure to follow the *Get Started* instructions on [hydro-informatics.github.io](https://hydro-informatics.github.io/hy_ide.html) to get ready with *Anaconda* and familiarize with [*git*](https://hydro-informatics.github.io/hy_git.html).
 
