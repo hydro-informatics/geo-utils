@@ -111,4 +111,4 @@ def raster2array(file_name, band_number=1):
     # overwrite NoDataValues with np.nan
     band_array = np.where(band_array == band.GetNoDataValue(), np.nan, band_array)
     # return the array and GeoTransformation used in the original raster
-    return band_array, raster.GetGeoTransform()
+    return raster, band_array, raster.GetGeoTransform()

@@ -178,5 +178,3 @@ def reproject_shapefile(source_dataset, source_layer, source_srs, target_srs):
 
     # add projection file
     make_prj(tar_file_name, int(source_srs.GetAuthorityCode(None)))
-
-

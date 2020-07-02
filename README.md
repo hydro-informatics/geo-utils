@@ -145,14 +145,14 @@ Output: osgeo.gdal.Dataset, osgeo.gdal.Band objects
 
 ### Raster to *numpy* array
 
-Usage: `array, geo_transformation = raster2array(file_name, band_number=1)`
+Usage: `raster_dataset, array, geo_transformation = raster2array(file_name, band_number=1)`
 
 | Input arguments | Type | Description |
 |-----------------|------|-------------|
 |`raster_file_name` | String | Of a (relative) raster directory (ends on `".tif"`, e.g., `"C:/temp/a_grid.tif"`).|
 |`band_number`| Integer | OPTIONAL to indicate the raster band number to open (default: 1).|
 
-Output: numpy.ndarray, tuple (`osgeo.gdal.Dataset.GetGeoTransform()`, i.e., `(x_origin (top left), pixel_width (west-east), 0, y_origin(top left), 0, pixel_height(north-south))` ).
+Output: osgeo.gdal.Dataset, numpy.ndarray, tuple (`osgeo.gdal.Dataset.GetGeoTransform()`, i.e., `(x_origin (top left), pixel_width (west-east), 0, y_origin(top left), 0, pixel_height(north-south))` ).
 
 ## Projection and spatial reference management
 The methods provided with `srs_mgmt` are: 
