@@ -30,8 +30,10 @@ import geo_utils as gu
 
 ```python
 import geo_utils as gu
-raster, geo_transform = gu.raster2array("/sample-data/froude.tif")
+raster, array, geo_transform = gu.raster2array("/sample-data/froude.tif")
 type(raster)
+<class 'osgeo.gdal.Dataset'>
+type(array)
 <class 'numpy.ndarray'>
 type(geo_transform)
 <class 'tuple'>
