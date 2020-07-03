@@ -104,7 +104,7 @@ def raster2array(file_name, band_number=1):
              (2) the GeoTransformation used in the original raster
     """
     # open the raster and band (see above)
-    raster, band = gdal.Open(file_name)
+    raster, band = open_raster(file_name, band_number=band_number)
     try:
         # read array data from band
         band_array = band.ReadAsArray()
