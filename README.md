@@ -283,15 +283,15 @@ Output: None (produces a line shapefile based on a `wkbMultiLineString`, with th
 
 ### Convert raster to polygon shapefile
 
-Usage: `raster2polygon(file_name, band_number=1, output_shapefile="", layer_name="basemap")`
+Usage: `raster2polygon(file_name, band_number=1, out_shp_fn="", layer_name="basemap")`
 
 | Input arguments | Type | Description |
 |-----------------|------|-------------|
 |`raster_file_name` | String | Of a (relative) directory (ends on `".tif"`, e.g., `"C:/temp/a_grid.tif"`) of raster with **INTEGER** pixel data types only.|
 |`band_number`| Integer | OPTIONAL to indicate the raster band number to open (default: 1).|
-|`output_shapefile` | String | shapefile name (with directory e.g., `"C:/temp/poly.shp"`).|
+|`out_shp_fn` | String | shapefile name (with directory e.g., `"C:/temp/poly.shp"`).|
 |`layer_name` | String | Name for shapefile layer (default=`"basemap"`).|
 
-Output: None (produces a polygon shapefile with `gdal.Polygonize`, with the name define in the `output_shapefile` argument).
+Output: None (produces a polygon shapefile with `gdal.Polygonize`, with the name define in the `out_shp_fn` argument).
 
 ### More to follow...

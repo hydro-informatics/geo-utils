@@ -104,22 +104,26 @@ def raster2line(raster_file_name, out_shp_fn, pixel_value):
     print("Success: Wrote %s" % str(out_shp_fn))
 
 
-def raster2polygon(file_name, band_number=1, output_shapefile="", layer_name="basemap"):
+def raster2polygon(file_name, band_number=1, out_shp_fn="", layer_name="basemap"):
     """
     Convert a raster to polygon
     :param file_name: STR of target file name, including directory; must end on ".tif"
     :param band_number: INT of the raster band number to open (default: 1)
-    :param output_shapefile: STR of a shapefile name (with directory e.g., "C:/temp/poly.shp")
+    :param out_shp_fn: STR of a shapefile name (with directory e.g., "C:/temp/poly.shp")
     :param layer_name: STR of a layer name
     :return: None
     """
     raster, raster_band = open_raster(file_name, band_number=band_number)
 
+    # verify output shapefile name
+    out_shp_fn = verify_shp_name(out_shp_fn)
+
     driver = ogr.GetDriverByName("ESRI Shapefile")
-    dst_ds = driver.CreateDataSource(output_shapefile)
+    dst_ds = driver.CreateDataSource(out_shp_fn)
     dst_layer = dst_ds.CreateLayer(layer_name, srs=None)
 
     gdal.Polygonize(raster_band, None, dst_layer, -1, [], callback=None)
+    print("Success: Wrote %s" % str(out_shp_fn))
 
 
 def verify_dataset(dataset):
