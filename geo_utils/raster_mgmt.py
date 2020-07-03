@@ -57,7 +57,7 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
         print("ERROR: Could not create %s." % str(file_name))
         return None
     # replace np.nan values
-    raster_array = np.where(raster_array == raster_array.min(), nan_value, raster_array)
+    raster_array[np.isnan(raster_array)] = nan_value
 
     # apply geo-origin and pixel dimensions
     if not geo_info:
