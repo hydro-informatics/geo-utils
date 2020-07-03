@@ -104,11 +104,18 @@ def raster2array(file_name, band_number=1):
              (2) the GeoTransformation used in the original raster
     """
     # open the raster and band (see above)
-    raster = gdal.Open(file_name)
-    band = raster.GetRasterBand(band_number)
-    # read array data from band
-    band_array = band.ReadAsArray()
-    # overwrite NoDataValues with np.nan
-    band_array = np.where(band_array == band.GetNoDataValue(), np.nan, band_array)
+    raster, band = gdal.Open(file_name)
+    try:
+        # read array data from band
+        band_array = band.ReadAsArray()
+    except AttributeError:
+        print("ERROR: Could not read array of raster band type=%s." % str(type(band)))
+        return None
+    try:
+        # overwrite NoDataValues with np.nan
+        band_array = np.where(band_array == band.GetNoDataValue(), np.nan, band_array)
+    except AttributeError:
+        print("ERROR: Could not get NoDataValue of raster band type=%s." % str(type(band)))
+        return None
     # return the array and GeoTransformation used in the original raster
     return raster, band_array, raster.GetGeoTransform()
