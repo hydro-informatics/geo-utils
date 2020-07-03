@@ -230,9 +230,24 @@ Output: None (creates a new shapefile or raster in the directory of the `source_
 ## Dataset conversion (raster and vector interaction) 
 
 The methods provided with `converter` are: 
+* `coords2offset` converts x-y coordinates to a pixel offset relative to the origin of the spatial reference used.
 * `get_layer` gets a layer of any dataset (raster or vector); if raster(osgeo.gdal.Dataset): layer=osgeo.gdal.Band; if vector (osgeo.ogr.DataSource): layer=osgeo.ogr.Layer' (useful for automation and data verification).
 * `verify_dataset` checks if a dataset is vector, raster, or mixed.
-* `raster2polygon` converts a raster to a vector dataset. 
+* `raster2line` converts a raster to a line vector dataset based on a user-specific value of pixels to connect. 
+* `raster2polygon` converts a raster to a polygon vector dataset. 
+
+### Get pixel offset
+Convert x-y coordinates to a pixel offset relative to the origin of the spatial reference (defined with `geo_transform`) used.<br>
+Usage: `offset_x, offset_y = coords2offset(geo_transform, x_coord, y_coord)`
+
+| Input arguments | Type | Description |
+|-----------------|------|-------------|
+|`geo_transform` | Tuple|  Defined by a gdal.DataSet.GetGeoTransform object.|
+|`x_coord`| Float | x-value of a pixel or point.|
+|`y_coord`| Float | y-value of a pixel or point.|
+
+Output: offset_x, offset_y (both integer of pixel numbers). 
+
 
 ### Get layer and dataset type info
 Usage: `get_layer(dataset, band_number=1)`
@@ -252,6 +267,19 @@ Usage: `verify_dataset(dataset)`
 | `dataset` | osgeo.gdal.Dataset or osgeo.ogr.DataSource | Raster or vector dataset to verify.|
 
 Output: String (either `"mixed"`, `"raster"`, or `"vector"`). 
+
+
+### Convert raster to line shapefile
+Convert a raster to a line shapefile based on a user-specific value of pixels (`pixel_value`) to connect.<br>
+Usage: `raster2line(raster_file_name, out_shp_fn, pixel_value)`
+
+| Input arguments | Type | Description |
+|-----------------|------|-------------|
+|`raster_file_name` | String | Of a (relative) directory (ends on `".tif"`, e.g., `"C:/temp/a_grid.tif"`) of raster with pixel data types only.|
+|`out_shp_fn` | String | Output shapefile name (with directory e.g., `"C:/temp/poly.shp"`).|
+|`pixel_value` | Integer or Float | Pixel value to select pixels to connect with lines.|
+
+Output: None (produces a line shapefile based on a `wkbMultiLineString`, with the name define in the `out_shp_fn` argument).
 
 ### Convert raster to polygon shapefile
 
