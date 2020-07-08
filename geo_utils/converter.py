@@ -92,9 +92,9 @@ def raster2line(raster_file_name, out_shp_fn, pixel_value):
         print("ERROR: The defined pixel_value (%s) does not occur in the raster band." % str(pixel_value))
         return None
     pts_dict = {}
-    for index_y in trajectory[0]:
-        index_x = trajectory[1][count]
-        pts_dict[count] = coords2offset(raster_file_name, index_x, index_y)
+    for offset_y in trajectory[0]:
+        offset_x = trajectory[1][count]
+        pts_dict[count] = offset2coords(geo_transform, offset_x, offset_y)
         count += 1
 
     # create multiline (write points dictionary to line geometry (wkbMultiLineString)
