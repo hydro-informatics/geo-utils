@@ -215,7 +215,7 @@ Create a [`.prj` file](https://hydro-informatics.github.io/geo-shp.html#prj-shp)
 
 Output: None.
 
-### Reproject any gdal.Dataset (`reproject`)
+### Re-project any gdal.Dataset (`reproject`)
 Re-project any raster or vector dataset to the projection and spatial reference system of another raster or vector dataset. Usage:<br>
 `reproject(source_dataset, new_projection_dataset)`
 
@@ -232,13 +232,15 @@ Output: None (creates a new shapefile or raster in the directory of the `source_
 The methods provided with `converter` are: 
 * `coords2offset` converts x-y coordinates to a pixel offset relative to the origin of the spatial reference used.
 * `get_layer` gets a layer of any dataset (raster or vector); if raster(osgeo.gdal.Dataset): layer=osgeo.gdal.Band; if vector (osgeo.ogr.DataSource): layer=osgeo.ogr.Layer' (useful for automation and data verification).
+* `offset2coords` is the inverse function of `coords2offset` and converts x-y pixel offset to x-y coordinates to relative to the origin of the spatial reference used.
 * `verify_dataset` checks if a dataset is vector, raster, or mixed.
 * `raster2line` converts a raster to a line vector dataset based on a user-specific value of pixels to connect. 
 * `raster2polygon` converts a raster to a polygon vector dataset. 
 
-### Get pixel offset
-Convert x-y coordinates to a pixel offset relative to the origin of the spatial reference (defined with `geo_transform`) used.<br>
-Usage: `offset_x, offset_y = coords2offset(geo_transform, x_coord, y_coord)`
+### Get pixel offset from x-y coordinates and vice versa
+Convert x-y coordinates to a pixel offset, and vice verse, relative to the origin of the spatial reference (defined with `geo_transform`) used.<br>
+Usage (coordinates to offset): `offset_x, offset_y = coords2offset(geo_transform, x_coord, y_coord)`
+Usage (offset to coordinates): `x_coord, y_coord = offset2oords(geo_transform, offset_x, offset_y)`
 
 | Input arguments | Type | Description |
 |-----------------|------|-------------|
@@ -246,7 +248,7 @@ Usage: `offset_x, offset_y = coords2offset(geo_transform, x_coord, y_coord)`
 |`x_coord`| Float | x-value of a pixel or point.|
 |`y_coord`| Float | y-value of a pixel or point.|
 
-Output: offset_x, offset_y (both integer of pixel numbers). 
+Output: offset_x, offset_y (both integer of pixel numbers) or x_coord, y_coord (both float coordinates). 
 
 
 ### Get layer and dataset type info

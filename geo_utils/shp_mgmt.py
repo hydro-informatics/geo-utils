@@ -13,10 +13,16 @@ def create_shp(shp_file_dir, overwrite=True, *args, **kwargs):
     :output: ogr shapefile (osgeo.ogr.DataSource)
     """
     shp_driver = ogr.GetDriverByName("ESRI Shapefile")
+    shp_file_dir = verify_shp_name(shp_file_dir)
 
     # check if output file exists if yes delete it
-    if os.path.exists(shp_file_dir) and overwrite:
-        shp_driver.DeleteDataSource(shp_file_dir)
+    if os.path.exists(shp_file_dir):
+        if overwrite:
+            shp_driver.DeleteDataSource(shp_file_dir)
+        else:
+            print("ERROR: Shapefile already exists and overwrite=False.")
+            print("       Delete existing shaepfile and/or use overwrite=True (default).")
+            return None
 
     # create and return new shapefile object
     new_shp = shp_driver.CreateDataSource(shp_file_dir)

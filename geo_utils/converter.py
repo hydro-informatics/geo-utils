@@ -6,7 +6,7 @@ gdal.UseExceptions()
 
 def coords2offset(geo_transform, x_coord, y_coord):
     """
-    Returns x-y pixel offset
+    Returns x-y pixel offset (inverse of offset2coords function)
     :param geo_transform: osgeo.gdal.Dataset.GetGeoTransform() object
     :param x_coord: FLOAT of x-coordinate
     :param y_coord: FLOAT of y-coordinate
@@ -18,9 +18,6 @@ def coords2offset(geo_transform, x_coord, y_coord):
         pixel_width = geo_transform[1]
         pixel_height = geo_transform[5]
     except IndexError:
-        print("ERROR: Invalid geo_transform object (%s)." % str(geo_transform))
-        return None
-    except:
         print("ERROR: Invalid geo_transform object (%s)." % str(geo_transform))
         return None
 
@@ -47,6 +44,32 @@ def get_layer(dataset, band_number=1):
     return {"type": "None", "layer": None}
 
 
+def offset2coords(geo_transform, offset_x, offset_y):
+    """
+    Returns x-y coordinates from pixel offset (inverse of coords2offset function)
+    :param geo_transform: osgeo.gdal.Dataset.GetGeoTransform() object
+    :param offset_x: integer of x pixel numbers
+    :param offset_y: integer of y pixel numbers
+    :return: x_coord, y_coord (FLOATs of x-y-coordinates)
+    """
+    try:
+        origin_x = geo_transform[0]
+        origin_y = geo_transform[3]
+        pixel_width = geo_transform[1]
+        pixel_height = geo_transform[5]
+    except IndexError:
+        print("ERROR: Invalid geo_transform object (%s)." % str(geo_transform))
+        return None
+
+    try:
+        coord_x = origin_x + pixel_width * offset_x
+        coord_y = origin_y + pixel_height * offset_y
+    except ValueError:
+        print("ERROR: geo_transform tuple contains non-numeric data: %s" % str(geo_transform))
+        return None
+    return coord_x, coord_y
+
+
 def raster2line(raster_file_name, out_shp_fn, pixel_value):
     """
     Convert a raster to a line shapefile, where pixel_value determines line start and end points
@@ -65,11 +88,13 @@ def raster2line(raster_file_name, out_shp_fn, pixel_value):
     # convert raster array to points dict
     count = 0
     trajectory = np.where(array == pixel_value)  # nested list
+    if np.count_nonzero(trajectory) is 0:
+        print("ERROR: The defined pixel_value (%s) does not occur in the raster band." % str(pixel_value))
+        return None
     pts_dict = {}
     for index_y in trajectory[0]:
         index_x = trajectory[1][count]
-        coord_x, coord_y = coords2offset(raster_file_name, index_x, index_y)
-        pts_dict[count] = (coord_x, coord_y)
+        pts_dict[count] = coords2offset(raster_file_name, index_x, index_y)
         count += 1
 
     # create multiline (write points dictionary to line geometry (wkbMultiLineString)
@@ -81,20 +106,13 @@ def raster2line(raster_file_name, out_shp_fn, pixel_value):
         point2.AddPoint(i[1][0], i[1][1])
 
         distance = point1.Distance(point2)
-
         if distance < max_distance:
             line = ogr.Geometry(ogr.wkbLineString)
-            line.AddPoint(i[0][0],i[0][1])
-            line.AddPoint(i[1][0],i[1][1])
+            line.AddPoint(i[0][0], i[0][1])
+            line.AddPoint(i[1][0], i[1][1])
             multi_line.AddGeometry(line)
 
-    # verify output shapefile name
-    out_shp_fn = verify_shp_name(out_shp_fn)
-
     # write multiline (wkbMultiLineString2shp) to shapefile
-    shp_driver = ogr.GetDriverByName("ESRI Shapefile")
-    if os.path.exists(out_shp_fn):
-        shp_driver.DeleteDataSource(out_shp_fn)
     new_shp = create_shp(out_shp_fn, layer_name="raster_pts", layer_type="line")
     lyr = new_shp.GetLayer()
     feature_def = lyr.GetLayerDefn()
