@@ -1,73 +1,6 @@
-from raster_mgmt import *
-from shp_mgmt import *
+from srs_mgmt import *
 import itertools
 gdal.UseExceptions()
-
-
-def coords2offset(geo_transform, x_coord, y_coord):
-    """
-    Returns x-y pixel offset (inverse of offset2coords function)
-    :param geo_transform: osgeo.gdal.Dataset.GetGeoTransform() object
-    :param x_coord: FLOAT of x-coordinate
-    :param y_coord: FLOAT of y-coordinate
-    :return: offset_x, offset_y (both integer of pixel numbers)
-    """
-    try:
-        origin_x = geo_transform[0]
-        origin_y = geo_transform[3]
-        pixel_width = geo_transform[1]
-        pixel_height = geo_transform[5]
-    except IndexError:
-        print("ERROR: Invalid geo_transform object (%s)." % str(geo_transform))
-        return None
-
-    try:
-        offset_x = int((x_coord - origin_x) / pixel_width)
-        offset_y = int((y_coord - origin_y) / pixel_height)
-    except ValueError:
-        print("ERROR: geo_transform tuple contains non-numeric data: %s" % str(geo_transform))
-        return None
-    return offset_x, offset_y
-
-
-def get_layer(dataset, band_number=1):
-    """
-    Get a layer=band (RasterDataSet) or layer=ogr.Dataset.Layer() of any dataset
-    :param dataset: osgeo.gdal.Dataset or osgeo.ogr.DataSource
-    :param band_number: ONLY FOR RASTERS - INT of the raster band number to open (default: 1)
-    :output: DICT {GEO-TYPE: if raster: raster_band, if vector: GetLayer(), else: None}
-    """
-    if verify_dataset(dataset) == "raster":
-        return {"type": "raster", "layer": dataset.GetRasterBand(band_number)}
-    if verify_dataset(dataset) == "vector":
-        return {"type": "vector", "layer":  dataset.GetLayer()}
-    return {"type": "None", "layer": None}
-
-
-def offset2coords(geo_transform, offset_x, offset_y):
-    """
-    Returns x-y coordinates from pixel offset (inverse of coords2offset function)
-    :param geo_transform: osgeo.gdal.Dataset.GetGeoTransform() object
-    :param offset_x: integer of x pixel numbers
-    :param offset_y: integer of y pixel numbers
-    :return: x_coord, y_coord (FLOATs of x-y-coordinates)
-    """
-    try:
-        origin_x = geo_transform[0]
-        origin_y = geo_transform[3]
-        pixel_width = geo_transform[1]
-        pixel_height = geo_transform[5]
-    except IndexError:
-        print("ERROR: Invalid geo_transform object (%s)." % str(geo_transform))
-        return None
-
-    try:
-        coord_x = origin_x + pixel_width * offset_x
-        coord_y = origin_y + pixel_height * offset_y
-    except ValueError:
-        print("ERROR: geo_transform tuple contains non-numeric data: %s" % str(geo_transform))
-        return None
-    return coord_x, coord_y
 
 
 def raster2line(raster_file_name, out_shp_fn, pixel_value):
@@ -81,25 +14,27 @@ def raster2line(raster_file_name, out_shp_fn, pixel_value):
 
     # calculate max. distance between points
     # ensures correct neighbourhoods for start and end pts of lines
-    raster, array, geo_transform = open_raster(raster_file_name)
+    raster, array, geo_transform = raster2array(raster_file_name)
     pixel_width = geo_transform[1]
     max_distance = np.ceil(np.sqrt(2 * pixel_width**2))
 
-    # convert raster array to points dict
-    count = 0
-    trajectory = np.where(array == pixel_value)  # nested list
+    # extract pixels with the user-defined pixel value from the raster array
+    trajectory = np.where(array == pixel_value)
     if np.count_nonzero(trajectory) is 0:
         print("ERROR: The defined pixel_value (%s) does not occur in the raster band." % str(pixel_value))
         return None
-    pts_dict = {}
+
+    # convert pixel offset to coordinates and append to nested list of points
+    points = []
+    count = 0
     for offset_y in trajectory[0]:
         offset_x = trajectory[1][count]
-        pts_dict[count] = offset2coords(geo_transform, offset_x, offset_y)
+        points.append(offset2coords(geo_transform, offset_x, offset_y))
         count += 1
 
     # create multiline (write points dictionary to line geometry (wkbMultiLineString)
     multi_line = ogr.Geometry(ogr.wkbMultiLineString)
-    for i in itertools.combinations(pts_dict.values(), 2):
+    for i in itertools.combinations(points, 2):
         point1 = ogr.Geometry(ogr.wkbPoint)
         point1.AddPoint(i[0][0], i[0][1])
         point2 = ogr.Geometry(ogr.wkbPoint)
@@ -119,6 +54,10 @@ def raster2line(raster_file_name, out_shp_fn, pixel_value):
     new_line_feat = ogr.Feature(feature_def)
     new_line_feat.SetGeometry(multi_line)
     lyr.CreateFeature(new_line_feat)
+
+    # create projection file
+    srs = get_srs(raster)
+    make_prj(out_shp_fn, int(srs.GetAuthorityCode(None)))
     print("Success: Wrote %s" % str(out_shp_fn))
 
 

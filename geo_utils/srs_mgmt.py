@@ -1,4 +1,4 @@
-from converter import *
+from dataset_mgmt import *
 import urllib
 
 
@@ -36,7 +36,6 @@ def get_srs(dataset):
     gdal.UseExceptions()
 
     if verify_dataset(dataset) == "raster":
-        print("is a raster")
         sr = osr.SpatialReference()
         sr.ImportFromWkt(dataset.GetProjection())
     else:
@@ -92,7 +91,8 @@ def make_prj(shp_file_name, epsg):
 
 def reproject(source_dataset, new_projection_dataset):
     """
-    Re-project a raster onto the spatial reference system of a (shapefile) layer
+    Re-project a dataset (raster or shapefile) onto the spatial reference system
+    of a (shapefile or raster) layer
     :param source_dataset: gdal.Dataset (shapefile or raster)
     :param new_projection_dataset: gdal.Dataset (shapefile or raster) with new projection info
     :output: if source==raster: GeoTIFF in same directory as source with "_reprojected"

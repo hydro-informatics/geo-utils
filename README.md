@@ -55,7 +55,8 @@ print(geo_transform)
 * `srs_mgmt`: Manage projections and spatial reference systems of raster and vector datasets
 * `shp_mgmt`: Create shapefiles (vector data).
 * `raster_mgmt`: Open and create raster datasets, and convert raster bands to a *numpy* array.
-* `converter`: Universal functions for interactions between raster and vector data sets.
+* `dataset_mgmt`:  Inherits functions from `shp_mgmt` and `raster_mgmt`, and provides universal layer and geospatialization functions. 
+* `geo_tools`: Universal functions to convert raster to vector datasets and vice versa.
 
 
 ## Manage shapefiles (vector data)
@@ -227,9 +228,9 @@ Re-project any raster or vector dataset to the projection and spatial reference 
 Output: None (creates a new shapefile or raster in the directory of the `source_dataset`).
 
 
-## Dataset conversion (raster and vector interaction) 
+## Dataset management (general functions for raster and vector datasets) 
 
-The methods provided with `converter` are: 
+The methods provided with `dataset_mgmt` are: 
 * `coords2offset` converts x-y coordinates to a pixel offset relative to the origin of the spatial reference used.
 * `get_layer` gets a layer of any dataset (raster or vector); if raster(osgeo.gdal.Dataset): layer=osgeo.gdal.Band; if vector (osgeo.ogr.DataSource): layer=osgeo.ogr.Layer' (useful for automation and data verification).
 * `offset2coords` is the inverse function of `coords2offset` and converts x-y pixel offset to x-y coordinates to relative to the origin of the spatial reference used.
@@ -270,6 +271,15 @@ Usage: `verify_dataset(dataset)`
 
 Output: String (either `"mixed"`, `"raster"`, or `"vector"`). 
 
+## Dataset conversion
+
+Convert rasters to shapefiles and vice versa. 
+
+The methods provided with `geo_tools` are: 
+* `raster2line` converts a raster to a line vector dataset based on a user-specific value of pixels to connect. 
+* `raster2polygon` converts a raster to a polygon vector dataset.
+* `points2raster` converts a points or a point shapefile to raster dataset. 
+* `polygon2raster` converts a polygon shapefile to a raster dataset.  
 
 ### Convert raster to line shapefile
 Convert a raster to a line shapefile based on a user-specific value of pixels (`pixel_value`) to connect.<br>
@@ -296,4 +306,8 @@ Usage: `raster2polygon(file_name, band_number=1, out_shp_fn="", layer_name="base
 
 Output: None (produces a polygon shapefile with `gdal.Polygonize`, with the name define in the `out_shp_fn` argument).
 
-### More to follow...
+### Points to raster
+To be implemented...
+
+### Polygon to raster
+To be implemented...
