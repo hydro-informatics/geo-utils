@@ -117,3 +117,68 @@ def raster2polygon(file_name, out_shp_fn, band_number=1, field_name="values"):
     make_prj(out_shp_fn, int(srs.GetAuthorityCode(None)))
     print("Success: Wrote %s" % str(out_shp_fn))
 
+
+def rasterize(in_shp_file_name, out_raster_file_name, pixel_size=10, no_data_value=-9999,
+              rdtype=gdal.GDT_Float32, **kwargs):
+    """
+    Converts any shapefile to a raster
+    :param in_shp_file_name: STR of a shapefile name (with directory e.g., "C:/temp/poly.shp")
+    :param out_raster_file_name: STR of target file name, including directory; must end on ".tif"
+    :param pixel_size: INT of pixel size (default: 10)
+    :param no_data_value: Numeric (INT/FLOAT) for no-data pixels (default: -9999)
+    :param rdtype: gdal.GDALDataType raster data type - default=gdal.GDT_Float32 (32 bit floating point)
+    :kwarg field_name: name of the shapefile's field with values to burn to the raster
+    :return: produces the shapefile defined with in_shp_file_name
+    """
+
+    # open data source
+    try:
+        source_ds = ogr.Open(in_shp_file_name)
+    except RuntimeError as e:
+        print("ERROR: Could not open %s." % str(in_shp_file_name))
+        return None
+    source_lyr = source_ds.GetLayer()
+
+    # read extent
+    x_min, x_max, y_min, y_max = source_lyr.GetExtent()
+
+    # get x and y resolution
+    x_res = int((x_max - x_min) / pixel_size)
+    y_res = int((y_max - y_min) / pixel_size)
+
+    # create destination data source (GeoTIff raster)
+    try:
+        target_ds = gdal.GetDriverByName('GTiff').Create(out_raster_file_name, x_res, y_res, 1, eType=rdtype)
+    except RuntimeError as e:
+        print("ERROR: Could not create %s." % str(out_raster_file_name))
+        return None
+    target_ds.SetGeoTransform((x_min, pixel_size, 0, y_max, 0, -pixel_size))
+    band = target_ds.GetRasterBand(1)
+    band.Fill(no_data_value)
+    band.SetNoDataValue(no_data_value)
+
+    # get spatial reference system and assign to raster
+    srs = get_srs(source_ds)
+    try:
+        srs.ImportFromEPSG(int(srs.GetAuthorityCode(None)))
+    except RuntimeError as e:
+        print(e)
+        return None
+    target_ds.SetProjection(srs.ExportToWkt())
+
+    # RasterizeLayer(Dataset dataset, int bands, Layer layer, pfnTransformer=None, pTransformArg=None,
+    # int burn_values=0, options=None, GDALProgressFunc callback=0, callback_data=None)
+    try:
+        if kwargs.get("field_name"):
+            gdal.RasterizeLayer(target_ds, [1], source_lyr, None, None, burn_values=[0],
+                                options=["ALL_TOUCHED=TRUE", "ATTRIBUTE=" + str(kwargs.get("field_name"))])
+        else:
+            gdal.RasterizeLayer(target_ds, [1], source_lyr, None, None, burn_values=[0],
+                                options=["ALL_TOUCHED=TRUE"])
+    except RuntimeError as e:
+        print("ERROR: Could not rasterize (burn values from %s)." % str(in_shp_file_name))
+        return None
+
+    # release raster band
+    band.FlushCache()
+

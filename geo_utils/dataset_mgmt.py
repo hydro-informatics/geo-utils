@@ -79,11 +79,20 @@ def verify_dataset(dataset):
     try:
         if dataset.RasterCount > 0 and dataset.GetLayerCount() > 0:
             return "mixed"
-        elif dataset.RasterCount > 0:
+    except AttributeError:
+        pass
+
+    try:
+        if dataset.RasterCount > 0:
             return "raster"
-        elif dataset.GetLayerCount() > 0:
+    except AttributeError:
+        pass
+
+    try:
+        if dataset.GetLayerCount() > 0:
             return "vector"
         else:
             return "empty"
     except AttributeError:
         print("ERROR: %s is not an osgeo.gdal.Dataset object." % str(dataset))
+        return None

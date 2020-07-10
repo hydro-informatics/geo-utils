@@ -40,7 +40,7 @@ def get_srs(dataset):
         sr.ImportFromWkt(dataset.GetProjection())
     else:
         try:
-            sr = osr.SpatialReference(str(dataset.GetSpatialRef()))
+            sr = osr.SpatialReference(str(dataset.GetLayer().GetSpatialRef()))
         except AttributeError:
             print("ERROR: Invalid source data (%s)." % str(dataset))
             return None

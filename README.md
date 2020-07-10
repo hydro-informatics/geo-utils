@@ -318,8 +318,21 @@ Usage: `raster2polygon(file_name, band_number=1, out_shp_fn="", layer_name="base
 
 Output: None (produces a polygon shapefile with `gdal.Polygonize`, with the name define in the `out_shp_fn` argument).
 
-### Points to raster
+### Rasterize
+Convert any shapefile to a raster by burning values of its features to a raster.
+
+Usage: `rasterize(n_shp_file_name, out_raster_file_name, pixel_size=10, no_data_value=-9999, rdtype=gdal.GDT_Float32, **kwargs)`
+
+| Input arguments | Type | Description |
+|-----------------|------|-------------|
+|`in_shp_file_name` | String | Input shapefile name (with directory e.g., `"C:/temp/poly.shp"`).|
+|`out_raster_file_name` | String | Of a (relative) directory (ends on `".tif"`, e.g., `"C:/temp/a_grid.tif"`) of a raster to be created.|
+|`pixel_size`| Integer | OPTIONAL to indicate the pixel size of the target raster (default: 10).|
+|`no_data_value` | Integer | OPTIONAL no data value to be used for pixels that do not contain data (default: -9999).|
+|`rdtype` | gdal.GDALDataType | OPTIONAL raster data type (default: gdal.GDT_Float32 - i.e., 32 bit floating point)|
+|`field_name` | String | OPTIONAL KEYWORD to indicate the field name of values to be burned to the raster (highly recommended to provide a field name according to the shapefile's attribute table).|
+
+### Points/Polygon to raster
 To be implemented...
 
-### Polygon to raster
-To be implemented...
+
