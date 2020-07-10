@@ -291,7 +291,7 @@ Usage: `int_raster_file_name = float2int(raster_file_name, band_number)`
 |`raster_file_name` | String | Of a (relative) directory (ends on `".tif"`, e.g., `"C:/temp/a_grid.tif"`) of raster with pixel data types only.|
 |`band_number`| Integer | OPTIONAL to indicate the raster band number to open (default: 1).|
 
-Output: *String* of the integer raster file name (i.e., a raster with an `_int.tif` suffix is created in the same directory and with the same raster file name prefix as `raster_file_name`). For example: `"C:/rasters/flow_depth_int.tif`.
+Output: *String* of the integer raster file name (i.e., a raster with an `_int.tif` suffix is created in the same directory and with the same raster file name prefix as `raster_file_name`). For example: `"C:/rasters/flow_depth_int.tif"`.
 
 ### Convert raster to line shapefile
 Convert a raster to a line shapefile based on a user-specific value of pixels (`pixel_value`) to connect.<br>
