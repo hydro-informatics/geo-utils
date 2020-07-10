@@ -276,10 +276,22 @@ Output: String (either `"mixed"`, `"raster"`, or `"vector"`).
 Convert rasters to shapefiles and vice versa. 
 
 The methods provided with `geo_tools` are: 
+* `float2int` converts a float to an integer type raster dataset. 
 * `raster2line` converts a raster to a line vector dataset based on a user-specific value of pixels to connect. 
 * `raster2polygon` converts a raster to a polygon vector dataset.
 * `points2raster` converts a points or a point shapefile to raster dataset. 
 * `polygon2raster` converts a polygon shapefile to a raster dataset.  
+
+### Convert float to integer raster dataset
+Convert a floating point raster data to integers with `numpy.array.astype(int)`.<br>
+Usage: `int_raster_file_name = float2int(raster_file_name, band_number)`
+
+| Input arguments | Type | Description |
+|-----------------|------|-------------|
+|`raster_file_name` | String | Of a (relative) directory (ends on `".tif"`, e.g., `"C:/temp/a_grid.tif"`) of raster with pixel data types only.|
+|`band_number`| Integer | OPTIONAL to indicate the raster band number to open (default: 1).|
+
+Output: *String* of the integer raster file name (i.e., a raster with an `_int.tif` suffix is created in the same directory and with the same raster file name prefix as `raster_file_name`). For example: `"C:/rasters/flow_depth_int.tif`.
 
 ### Convert raster to line shapefile
 Convert a raster to a line shapefile based on a user-specific value of pixels (`pixel_value`) to connect.<br>
@@ -299,10 +311,10 @@ Usage: `raster2polygon(file_name, band_number=1, out_shp_fn="", layer_name="base
 
 | Input arguments | Type | Description |
 |-----------------|------|-------------|
-|`raster_file_name` | String | Of a (relative) directory (ends on `".tif"`, e.g., `"C:/temp/a_grid.tif"`) of raster with **INTEGER** pixel data types only.|
+|`raster_file_name` | String | Of a (relative) directory (ends on `".tif"`, e.g., `"C:/temp/a_grid.tif"`) of raster with **INTEGER** pixel data types only. If *Float* data is provided, the function automatically uses `float2int`.|
 |`band_number`| Integer | OPTIONAL to indicate the raster band number to open (default: 1).|
 |`out_shp_fn` | String | shapefile name (with directory e.g., `"C:/temp/poly.shp"`).|
-|`layer_name` | String | Name for shapefile layer (default=`"basemap"`).|
+|`field_name` | String | Name for the field where the values of the raster are stored (default=`"values"`).|
 
 Output: None (produces a polygon shapefile with `gdal.Polygonize`, with the name define in the `out_shp_fn` argument).
 

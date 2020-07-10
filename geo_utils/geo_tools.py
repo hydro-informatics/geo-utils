@@ -3,6 +3,33 @@ import itertools
 gdal.UseExceptions()
 
 
+def float2int(raster_file_name, band_number=1):
+    """
+    :param raster_file_name: STR of target file name, including directory; must end on ".tif"
+    :param band_number: INT of the raster band number to open (default: 1)
+    :output: new_raster_file_name (STR)
+    """
+    raster, array, geo_transform = raster2array(raster_file_name, band_number=band_number)
+    try:
+        array = array.astype(int)
+    except ValueError:
+        print("ERROR: Invalid raster pixel values.")
+        return raster_file_name
+    new_name = raster_file_name.split(".tif")[0] + "_int.tif"
+
+    # get source coordinate system and exit function if not possible
+    src_srs = get_srs(raster)
+    if not src_srs:
+        # ensure consistency
+        return raster_file_name
+
+    # create integer raster
+    print("Info: Creating integer raster: \n>> %s" % new_name)
+    create_raster(new_name, array, epsg=int(src_srs.GetAuthorityCode(None)),
+                  rdtype=gdal.GDT_Int32, geo_info=geo_transform)
+    return new_name
+
+
 def raster2line(raster_file_name, out_shp_fn, pixel_value):
     """
     Convert a raster to a line shapefile, where pixel_value determines line start and end points
@@ -61,43 +88,32 @@ def raster2line(raster_file_name, out_shp_fn, pixel_value):
     print("Success: Wrote %s" % str(out_shp_fn))
 
 
-def raster2polygon(file_name, band_number=1, out_shp_fn="", layer_name="basemap"):
+def raster2polygon(file_name, out_shp_fn, band_number=1, field_name="values"):
     """
     Convert a raster to polygon
     :param file_name: STR of target file name, including directory; must end on ".tif"
-    :param band_number: INT of the raster band number to open (default: 1)
     :param out_shp_fn: STR of a shapefile name (with directory e.g., "C:/temp/poly.shp")
-    :param layer_name: STR of a layer name
+    :param band_number: INT of the raster band number to open (default: 1)
+    :param field_name: STR of the field where raster pixel values will be stored (default: "values")
     :return: None
     """
+    # ensure that the input raster contains integer values only and open the input raster
+    file_name = float2int(file_name)
     raster, raster_band = open_raster(file_name, band_number=band_number)
 
-    # verify output shapefile name
-    out_shp_fn = verify_shp_name(out_shp_fn)
+    # create new shapefile with the create_shp function
+    new_shp = create_shp(out_shp_fn, layer_name="raster_data", layer_type="polygon")
+    dst_layer = new_shp.GetLayer()
 
-    driver = ogr.GetDriverByName("ESRI Shapefile")
-    dst_ds = driver.CreateDataSource(out_shp_fn)
-    dst_layer = dst_ds.CreateLayer(layer_name, srs=None)
+    # create new field to define values
+    new_field = ogr.FieldDefn(field_name, ogr.OFTInteger)
+    dst_layer.CreateField(new_field)
 
-    gdal.Polygonize(raster_band, None, dst_layer, -1, [], callback=None)
+    # Polygonize(band, hMaskBand[optional]=None, destination lyr, field ID, papszOptions=[], callback=None)
+    gdal.Polygonize(raster_band, None, dst_layer, 0, [], callback=None)
+
+    # create projection file
+    srs = get_srs(raster)
+    make_prj(out_shp_fn, int(srs.GetAuthorityCode(None)))
     print("Success: Wrote %s" % str(out_shp_fn))
 
-
-def verify_dataset(dataset):
-    """
-    Verify if a dataset contains raster or vector data
-    :param dataset: osgeo.gdal.Dataset or osgeo.ogr.DataSource
-    :return: String (either "mixed", "raster", or "vector")
-    """
-    # Check the contents of an osgeo.gdal.Dataset
-    try:
-        if dataset.RasterCount > 0 and dataset.GetLayerCount() > 0:
-            return "mixed"
-        elif dataset.RasterCount > 0:
-            return "raster"
-        elif dataset.GetLayerCount() > 0:
-            return "vector"
-        else:
-            return "empty"
-    except AttributeError:
-        print("ERROR: %s is not an osgeo.gdal.Dataset object." % str(dataset))
