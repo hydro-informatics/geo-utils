@@ -119,3 +119,13 @@ def raster2array(file_name, band_number=1):
         return None
     # return the array and GeoTransformation used in the original raster
     return raster, band_array, raster.GetGeoTransform()
+
+
+def clip_raster(polygon, in_raster, out_raster):
+    """
+    :param polygon: polygon filename, including directory; must end on ".shp"
+    :param in_raster: raster to be clipped, including directory.
+    :param out_raster: target raster, including directory.
+    :output: saves raster on the selected dir
+    """
+    gdal.Warp(out_raster, in_raster, cutlineDSName=polygon)
