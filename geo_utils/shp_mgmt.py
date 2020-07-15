@@ -1,5 +1,6 @@
 from gdal import ogr
-
+import geopandas
+import numpy as np
 import os
 
 
@@ -117,3 +118,33 @@ def verify_shp_name(shp_file_name, shorten_to=13):
         return shp_dir + pure_fn[0: shorten_to - 1] + ".shp"
     else:
         return shp_file_name
+
+
+def polygon_from_shapepoints(shapepoints, polygon, alpha=np.nan):
+    """
+    Create a polygon around a cloud of shapepoints
+    :param shapepoints: shape points filename, including directory.
+    :param polygon: target filename, including directory.
+    :param alpha: coefficient to adjust; the lower it is, the more slim will be the polygon.
+    :output: saves the polygon shapefile in the selected path
+    """
+    gdf = geopandas.read_file(shapepoints)
+
+    try:
+        import alphashape
+    except ModuleNotFoundError as e:
+        print(e)
+    else:
+        # If the user doesnt select an alpha value, the alpha will be optimized automatically.
+        if np.isfinite(alpha):
+            try:
+                poly = alphashape.alphashape(gdf, alpha)
+            except FileNotFoundError as e:
+                print(e)
+        else:
+            try:
+                poly = alphashape.alphashape(gdf)
+            except FileNotFoundError as e:
+                print(e)
+            else:
+                poly.to_file(polygon)
