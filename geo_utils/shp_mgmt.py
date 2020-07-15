@@ -1,8 +1,11 @@
-from gdal import ogr
-import geopandas
-import numpy as np
-import os
-
+try:
+    from gdal import ogr
+    import geopandas
+    import numpy as np
+    import os
+    import alphashape
+except ModuleNotFoundError as e:
+    print(e)
 
 def create_shp(shp_file_dir, overwrite=True, *args, **kwargs):
     """
@@ -130,21 +133,16 @@ def polygon_from_shapepoints(shapepoints, polygon, alpha=np.nan):
     """
     gdf = geopandas.read_file(shapepoints)
 
-    try:
-        import alphashape
-    except ModuleNotFoundError as e:
-        print(e)
+    # If the user doesnt select an alpha value, the alpha will be optimized automatically.
+    if np.isfinite(alpha):
+        try:
+            poly = alphashape.alphashape(gdf, alpha)
+        except FileNotFoundError as e:
+            print(e)
     else:
-        # If the user doesnt select an alpha value, the alpha will be optimized automatically.
-        if np.isfinite(alpha):
-            try:
-                poly = alphashape.alphashape(gdf, alpha)
-            except FileNotFoundError as e:
-                print(e)
+        try:
+            poly = alphashape.alphashape(gdf)
+        except FileNotFoundError as e:
+            print(e)
         else:
-            try:
-                poly = alphashape.alphashape(gdf)
-            except FileNotFoundError as e:
-                print(e)
-            else:
-                poly.to_file(polygon)
+            poly.to_file(polygon)

@@ -43,7 +43,12 @@ print(geo_transform)
 
 # Requirements
  * Python 3.x (read more on [hydro-informatics.github.io](https://hydro-informatics.github.io/hy_ide.html))
- * Fundamental packages: `numpy`, `gdal` (read more on [hydro-informatics.github.io](https://hydro-informatics.github.io/geo-pckg.html#gdal)
+ * Dependencies: `
+    - `numpy`
+    - `gdal` (read more on [hydro-informatics.github.io](https://hydro-informatics.github.io/geo-pckg.html#gdal)
+    - `geopandas`
+    - `alphashape`
+    - `shapely`
  
 # Utility Documentation
 ## Package structure
@@ -335,7 +340,5 @@ Usage: `rasterize(n_shp_file_name, out_raster_file_name, pixel_size=10, no_data_
 |`rdtype` | gdal.GDALDataType | OPTIONAL raster data type (default: gdal.GDT_Float32 - i.e., 32 bit floating point)|
 |`field_name` | String | OPTIONAL KEYWORD to indicate the field name of values to be burned to the raster (highly recommended to provide a field name according to the shapefile's attribute table).|
 
-### Points/Polygon to raster
-To be implemented...
 
 
