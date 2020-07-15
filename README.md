@@ -66,6 +66,8 @@ The methods provided with `shp_mgmt` are:
 * `get_geom_description` gets the WKB Geometry Type as string from a shapefile layer.
 * `get_geom_simplified` gets a simplified geometry description (either point, line, or polygon) as a function of a WKB Geometry Type of a shapefile layer.
 * `verify_shp_name` ensures that a shapefile name does not exceed 13 characters or shortens the shapefile name length to N characters.
+* `polygon_from_shapepoint` creates a polygon around a cloud of shapepoints.
+
 
 ### Create shapefile
 
@@ -118,6 +120,7 @@ The methods provided with `raster_mgmt` are:
 * `create_raster` creates a new raster dataset (similar to the [course function](hydro-informatics.github.io/geo-raster.html#create-and-save-a-raster-from-array)).
 * `open_raster` opens an existing raster dataset (similar to the [course function](https://hydro-informatics.github.io/geo-raster.html#open-existing-raster-data)).
 * `raster2array` converts a raster band to a *numpy* array. 
+* `clip_raster` crops a raster inside polygon. It doesn't keep pixels touched by lines or polygons.
 
 ### Create raster
 Usage: `create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=10, pixel_height=10, nan_value=-9999.0, rdtype=gdal.GDT_Float32, geo_info=False)`
