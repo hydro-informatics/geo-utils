@@ -18,7 +18,7 @@ Use `git` to download the `geo_utils` repository (make sur to [install Git Bash]
 
 ```python
 import os, sys
-sys.path.append("D:/Target/Directory/geo-utils/geo_utils")  # Of course: replace "D:/Target/Directory/", e.g., with  r'' + os.path.abspath('')
+sys.path.append("D:/Target/Directory/geo-utils/")  # Of course: replace "D:/Target/Directory/", e.g., with  r'' + os.path.abspath('')
 ```
 
 2. Import `geo_utils`:
