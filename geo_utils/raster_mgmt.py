@@ -1,6 +1,6 @@
 import gdal
 import osr
-from config import *
+from geoconfig import *
 
 
 def open_raster(file_name, band_number=1):
@@ -29,7 +29,7 @@ def open_raster(file_name, band_number=1):
 
 
 def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=10, pixel_height=10,
-                  nan_value=-9999.0, rdtype=gdal.GDT_Float32, geo_info=False):
+                  nan_val=nan_value, rdtype=gdal.GDT_Float32, geo_info=False):
     """
     Convert a numpy.array to a GeoTIFF raster with the following parameters
     :param file_name: STR of target file name, including directory; must end on ".tif"
@@ -38,8 +38,8 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
     :param epsg: INT of EPSG:XXXX projection to use - default=4326
     :param pixel_height: INT of pixel height (multiple of unit defined with the EPSG number) - default=10m
     :param pixel_width: INT of pixel width (multiple of unit defined with the EPSG number) - default=10m
-    :param nan_value: INT/FLOAT no-data value to be used in the raster (replaces non-numeric and np.nan in array)
-                        default=-9999.0
+    :param nan_val: INT/FLOAT no-data value to be used in the raster (replaces non-numeric and np.nan in array)
+                        default=nan_value
     :param rdtype: gdal.GDALDataType raster data type - default=gdal.GDT_Float32 (32 bit floating point)
     :param geo_info: TUPLE defining a gdal.DataSet.GetGeoTransform object (supersedes origin, pixel_width, pixel_height)
                         default=False
@@ -50,15 +50,20 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
     driver = gdal.GetDriverByName("GTiff")
 
     # create raster dataset with number of cols and rows of the input array
-    cols = raster_array.shape[1]
-    rows = raster_array.shape[0]
+    try:
+        cols = raster_array.shape[1]
+        rows = raster_array.shape[0]
+    except TypeError:
+        print("ERROR: Provided array is not a numpy.ndarray.")
+        return -1
+
     try:
         new_raster = driver.Create(file_name, cols, rows, 1, eType=rdtype)
     except RuntimeError as e:
         print("ERROR: Could not create %s." % str(file_name))
         return -1
     # replace np.nan values
-    raster_array[np.isnan(raster_array)] = nan_value
+    raster_array[np.isnan(raster_array)] = nan_val
 
     # apply geo-origin and pixel dimensions
     if not geo_info:
