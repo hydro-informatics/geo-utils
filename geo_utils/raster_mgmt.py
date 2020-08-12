@@ -17,14 +17,14 @@ def open_raster(file_name, band_number=1):
     except RuntimeError as e:
         print("ERROR: Cannot open raster.")
         print(e)
-        return None
+        return None, None
     # open raster band or return None if corrupted
     try:
         raster_band = raster.GetRasterBand(band_number)
     except RuntimeError as e:
         print("ERROR: Cannot access raster band.")
         print(e)
-        return None
+        return raster, None
     return raster, raster_band
 
 
@@ -43,6 +43,7 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
     :param rdtype: gdal.GDALDataType raster data type - default=gdal.GDT_Float32 (32 bit floating point)
     :param geo_info: TUPLE defining a gdal.DataSet.GetGeoTransform object (supersedes origin, pixel_width, pixel_height)
                         default=False
+    :return new_raster: osgeo.gdal.Dataset (uses GTiff driver)
     """
     gdal.UseExceptions()
     # check out driver
@@ -55,7 +56,7 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
         new_raster = driver.Create(file_name, cols, rows, 1, eType=rdtype)
     except RuntimeError as e:
         print("ERROR: Could not create %s." % str(file_name))
-        return None
+        return -1
     # replace np.nan values
     raster_array[np.isnan(raster_array)] = nan_value
 
@@ -66,18 +67,18 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
             origin_y = origin[1]
         except IndexError:
             print("ERROR: Wrong origin format (required: (INT, INT) - provided: %s)." % str(origin))
-            return None
+            return -1
         try:
             new_raster.SetGeoTransform((origin_x, pixel_width, 0, origin_y, 0, pixel_height))
         except RuntimeError as e:
             print("ERROR: Invalid origin (must be INT) or pixel_height/pixel_width (must be INT) provided.")
-            return None
+            return -1
     else:
         try:
             new_raster.SetGeoTransform(geo_info)
         except RuntimeError as e:
             print(e)
-            return None
+            return -1
 
     # retrieve band number 1
     band = new_raster.GetRasterBand(1)
@@ -89,11 +90,12 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
         srs.ImportFromEPSG(epsg)
     except RuntimeError as e:
         print(e)
-        return None
+        return -1
     new_raster.SetProjection(srs.ExportToWkt())
 
     # release raster band
     band.FlushCache()
+    return new_raster
 
 
 def raster2array(file_name, band_number=1):
@@ -110,13 +112,13 @@ def raster2array(file_name, band_number=1):
         band_array = band.ReadAsArray()
     except AttributeError:
         print("ERROR: Could not read array of raster band type=%s." % str(type(band)))
-        return None
+        return raster, band, None
     try:
         # overwrite NoDataValues with np.nan
         band_array = np.where(band_array == band.GetNoDataValue(), np.nan, band_array)
     except AttributeError:
         print("ERROR: Could not get NoDataValue of raster band type=%s." % str(type(band)))
-        return None
+        return raster, band, None
     # return the array and GeoTransformation used in the original raster
     return raster, band_array, raster.GetGeoTransform()
 
