@@ -1,6 +1,6 @@
 import gdal
 import osr
-import numpy as np
+from config import *
 
 
 def open_raster(file_name, band_number=1):
@@ -17,14 +17,14 @@ def open_raster(file_name, band_number=1):
     except RuntimeError as e:
         print("ERROR: Cannot open raster.")
         print(e)
-        return None, None
+        return nan_value, nan_value
     # open raster band or return None if corrupted
     try:
         raster_band = raster.GetRasterBand(band_number)
     except RuntimeError as e:
         print("ERROR: Cannot access raster band.")
         print(e)
-        return raster, None
+        return raster, nan_value
     return raster, raster_band
 
 
@@ -112,13 +112,13 @@ def raster2array(file_name, band_number=1):
         band_array = band.ReadAsArray()
     except AttributeError:
         print("ERROR: Could not read array of raster band type=%s." % str(type(band)))
-        return raster, band, None
+        return raster, band, nan_value
     try:
         # overwrite NoDataValues with np.nan
         band_array = np.where(band_array == band.GetNoDataValue(), np.nan, band_array)
     except AttributeError:
         print("ERROR: Could not get NoDataValue of raster band type=%s." % str(type(band)))
-        return raster, band, None
+        return raster, band, nan_value
     # return the array and GeoTransformation used in the original raster
     return raster, band_array, raster.GetGeoTransform()
 
