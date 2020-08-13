@@ -46,12 +46,18 @@ def get_srs(dataset):
             return None
     # auto-detect epsg
     try:
-        sr.AutoIdentifyEPSG()
+        auto_detect = sr.AutoIdentifyEPSG()
+        if auto_detect is not 0:
+            sr = sr.FindMatches()[0][0]  # Find matches returns list of tuple of SpatialReferences
+            sr.AutoIdentifyEPSG()
     except TypeError:
         print("ERROR: Empty spatial reference.")
         return None
     # assign input SpatialReference
-    sr.ImportFromEPSG(int(sr.GetAuthorityCode(None)))
+    try:
+        sr.ImportFromEPSG(int(sr.GetAuthorityCode(None)))
+    except TypeError:
+        print("ERROR: Could not retrieve authority code (EPSG import failed).")
     return sr
 
 

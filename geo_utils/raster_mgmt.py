@@ -87,7 +87,9 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
 
     # retrieve band number 1
     band = new_raster.GetRasterBand(1)
+    band.SetNoDataValue(nan_val)
     band.WriteArray(raster_array)
+    band.SetScale(1.0)
 
     # create projection and assign to raster
     srs = osr.SpatialReference()
@@ -100,7 +102,7 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
 
     # release raster band
     band.FlushCache()
-    return new_raster
+    return 0
 
 
 def raster2array(file_name, band_number=1):
