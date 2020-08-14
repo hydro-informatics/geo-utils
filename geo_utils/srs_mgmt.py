@@ -112,27 +112,64 @@ def reproject(source_dataset, new_projection_dataset):
     layer_dict = get_layer(source_dataset)
 
     if layer_dict["type"] is "raster":
-        reproject_raster(source_dataset, layer_dict["layer"], srs_src, srs_tar)
+        reproject_raster(source_dataset, srs_src, srs_tar)
 
     if layer_dict["type"] is "vector":
         reproject_shapefile(source_dataset, layer_dict["layer"], srs_src, srs_tar)
 
 
-def reproject_raster(source_dataset, source_band, source_srs, target_srs):
+def reproject_raster(source_dataset, source_srs, target_srs):
     """
     Reproject a raster dataset (preferably use through reproject function)
     :param source_dataset: osgeo.ogr.DataSource (instantiate with ogr.Open(SHP-FILE))
-    :param source_band:  osgeo.ogr.Layer (instantiate with source_dataset.GetLayer())
     :param source_srs: osgeo.osr.SpatialReference (instantiate with get_srs(source_dataset))
     :param target_srs: osgeo.osr.SpatialReference (instantiate with get_srs(DATASET-WITH-TARGET-PROJECTION))
     """
-    # make GeoTransformation
+    # READ THE SOURCE GEO TRANSFORMATION (ORIGIN_X, PIXEL_WIDTH, 0, ORIGIN_Y, 0, PIXEL_HEIGHT)
+    src_geo_transform = source_dataset.GetGeoTransform()
+
+    # DERIVE PIXEL AND RASTER SIZE
+    pixel_width = src_geo_transform[1]
+    x_size = source_dataset.RasterXSize
+    y_size = source_dataset.RasterYSize
+
+    # ensure that TransformPoint (later) uses (x, y) instead of (y, x) with gdal version >= 3.0
+    source_srs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+    target_srs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+
+    # get CoordinateTransformation
     coord_trans = osr.CoordinateTransformation(source_srs, target_srs)
-    band_array = source_band.ReadAsArray()
+
+    # get boundaries of reprojected (new) dataset
+    (org_x, org_y, org_z) = coord_trans.TransformPoint(src_geo_transform[0], src_geo_transform[3])
+    (max_x, min_y, new_z) = coord_trans.TransformPoint(src_geo_transform[0] + src_geo_transform[1] * x_size,
+                                                       src_geo_transform[3] + src_geo_transform[5] * y_size, )
+
+    # INSTANTIATE NEW (REPROJECTED) IN-MEMORY DATASET AS A FUNCTION OF THE RASTER SIZE
+    mem_driver = gdal.GetDriverByName('MEM')
+    tar_dataset = mem_driver.Create("",
+                                    int((max_x - org_x) / pixel_width),
+                                    int((org_y - min_y) / pixel_width),
+                                    1, gdal.GDT_Float32)
+    # create new GeoTransformation
+    new_geo_transformation = (org_x, pixel_width, src_geo_transform[2],
+                              org_y, src_geo_transform[4], -pixel_width)
+
+    # assign the new GeoTransformation to the target dataset
+    tar_dataset.SetGeoTransform(new_geo_transformation)
+    tar_dataset.SetProjection(target_srs.ExportToWkt())
+
+    # PROJECT THE SOURCE RASTER ONTO THE NEW REPROJECTED RASTER
+    rep = gdal.ReprojectImage(source_dataset, tar_dataset,
+                              source_srs.ExportToWkt(), target_srs.ExportToWkt(),
+                              gdal.GRA_Bilinear)
+
+    # SAVE REPROJECTED DATASET AS GEOTIFF
     src_file_name = source_dataset.GetFileList()[0]
     tar_file_name = src_file_name.split(".tif")[0] + "_epsg" + target_srs.GetAuthorityCode(None) + ".tif"
-    create_raster(tar_file_name, band_array,
-                  epsg=int(source_srs.GetAuthorityCode(None)), geo_info=coord_trans)
+    create_raster(tar_file_name, raster_array=tar_dataset.ReadAsArray(),
+                  epsg=int(target_srs.GetAuthorityCode(None)),
+                  geo_info=tar_dataset.GetGeoTransform())
 
 
 def reproject_shapefile(source_dataset, source_layer, source_srs, target_srs):
