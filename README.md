@@ -85,7 +85,7 @@ Usage: `create_shp(shp_file_dir, overwrite=True, **kwargs)`
 |`layer_name`| String | OPTIONAL layer name (no layer will be created if the argument is not provided).|
 |`layer_type`| String | OPTIONAL layer type may be "point, "line", or "polygon" (no layer will be created if the argument is not provided).|
 
-Output: `osgeo.ogr.DataSource` (*Python* shapefile object)
+***return:*** `osgeo.ogr.DataSource` (*Python* shapefile object)
 
 ### Get Geometry Type of a shapefile
 Method returns the *WKB* geometry type description of a `osgeo.ogr.Layer.GetGeom()` integer number. <br>
@@ -96,7 +96,7 @@ Usage: `get_geom_description(layer)`
 |-----------------|------|-------------|
 |`layer` | osgeo.ogr.Layer | Any layer provided with `osgeo.ogr.DataSource.GetLayer()`.|
 
-Output: String of *WKB* geometry (e.g., `"wkbPoint"`, `"wkbLineString"`, or `"wkbPolygon"`).
+***return:*** `string` of *WKB* geometry (e.g., `"wkbPoint"`, `"wkbLineString"`, or `"wkbPolygon"`).
 
 ### Get simplified Geometry Type of a shapefile for use with `create_shp`
 Usage:  `get_geom_simplified(layer)`
@@ -105,7 +105,7 @@ Usage:  `get_geom_simplified(layer)`
 |-----------------|------|-------------|
 |`layer` | osgeo.ogr.Layer | Any layer provided with `osgeo.ogr.DataSource.GetLayer()`.|
 
-Output: String of a simplified geometry  that can be provided as `layer_type` argument in the `create_shp` method (e.g., `"point"`, `"line"`, or `"polygon"`).
+***return:*** String of a simplified geometry  that can be provided as `layer_type` argument in the `create_shp` method (e.g., `"point"`, `"line"`, or `"polygon"`).
 
 ### Verify shapefile name
 A shapefile name should not be longer than 13 characters in total. This function cuts off too long shapefile names (useful for automatically generated shapefile names in code).<br>
@@ -116,7 +116,7 @@ Usage:  `verify_shp_name(shp_file_name, **shorten_to)`
 |`shp_file_name` | String | Of a (relative) shapefile directory (ends on `".shp"`, e.g., `"C:/temp/poly.shp"`).|
 |`shorten_to` | Integer | OPTIONAL number of characters the shapefile name should have - default=13 (use e.g., if you intend to add a prefix or suffix).|
 
-Output: String of a shapefile name <= 13 characters (e.g., `"C:/temp/0123456789012.shp"`).
+***return:*** `string` of a shapefile name <= 13 characters (e.g., `"C:/temp/0123456789012.shp"`).
 
 
 ## Manage rasters 
@@ -142,7 +142,7 @@ Usage: `create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_wid
 |`rdtype` | gdal.GDALDataType | OPTIONAL raster data type - default=gdal.GDT_Float32 (32 bit floating point)|
 |`geo_info` | Tuple|  OPTIONAL to define  a gdal.DataSet.GetGeoTransform object (**supersedes origin, pixel_width, pixel_height**) default=False|
 
-Output: None (creates a *GeoTIFF* raster as defined with the `raster_file_name` argument).
+***return:*** `None` (creates a *GeoTIFF* raster as defined with the `raster_file_name` argument).
 
 ### Open raster
 Usage: `raster, raster_band = open_raster(file_name, band_number=1)`
@@ -152,7 +152,7 @@ Usage: `raster, raster_band = open_raster(file_name, band_number=1)`
 |`raster_file_name` | String | Of a (relative) raster directory (ends on `".tif"`, e.g., `"C:/temp/a_grid.tif"`).|
 |`band_number`| Integer | OPTIONAL to indicate the raster band number to open (default: 1).|
 
-Output: osgeo.gdal.Dataset, osgeo.gdal.Band objects
+***return:*** `osgeo.gdal.Dataset`, `osgeo.gdal.Band` 
 
 ### Raster to *numpy* array
 
@@ -163,7 +163,7 @@ Usage: `raster_dataset, array, geo_transformation = raster2array(file_name, band
 |`raster_file_name` | String | Of a (relative) raster directory (ends on `".tif"`, e.g., `"C:/temp/a_grid.tif"`).|
 |`band_number`| Integer | OPTIONAL to indicate the raster band number to open (default: 1).|
 
-Output: osgeo.gdal.Dataset, numpy.ndarray, tuple (`osgeo.gdal.Dataset.GetGeoTransform()`, i.e., `(x_origin (top left), pixel_width (west-east), 0, y_origin(top left), 0, pixel_height(north-south))` ).
+***return:*** `osgeo.gdal.Dataset`, `numpy.ndarray`, `tuple` (`osgeo.gdal.Dataset.GetGeoTransform()`, i.e., `(x_origin (top left), pixel_width (west-east), 0, y_origin(top left), 0, pixel_height(north-south))`).
 
 ## Projection and spatial reference management
 The methods provided with `srs_mgmt` are: 
@@ -183,7 +183,7 @@ Retrieve a [*WKT*-formatted projection](https://hydro-informatics.github.io/geo-
 | `epsg` | Integer | [*EPSG* Authority Code](https://hydro-informatics.github.io/geospatial-data.html#prj)|
 | `wkt_format` | String | OPTIONAL argument to specify the *WKT* output format; the default is `"esriwkt"` for shapefile projection files.s |
 
-Output: String containing a *WKT* projection, for example: 
+***return:*** `string` containing a *WKT* projection, for example: 
 ```
 "GEOGCS["GCS_WGS_1984",
         DATUM["WGS_1984",
@@ -201,7 +201,7 @@ Retrieve a [*WKT*-formatted projection](https://hydro-informatics.github.io/geo-
 |-----------------|------|-------------|
 | `epsg` | Integer | [*EPSG* Authority Code](https://hydro-informatics.github.io/geospatial-data.html#prj)|
 
-Output: String containing a *WKT* projection (see example above).
+***return:*** String containing a *WKT* projection (see example above).
 
 ### Get spatial reference system of any dataset (`get_srs`)
 Get the spatial reference of any `gdal.Dataset` with <br>
@@ -211,18 +211,18 @@ Get the spatial reference of any `gdal.Dataset` with <br>
 |-----------------|------|-------------|
 | `dataset` | gdal.Dataset | Any raster (`gdal.Open(file_name)`) or vector (`ogr_driver.Open(file_name)`) dataset loaded in *Python.|
 
-Output: `osgeo.osr.SpatialReference`
+***return:*** `osgeo.osr.SpatialReference`
 
 ### Make a .prj projection file for an Esri shapefile (`make_prj`)
 Create a [`.prj` file](https://hydro-informatics.github.io/geo-shp.html#prj-shp) for an Esri shapefile. The projection information may be generated with the `get_wkt` or `get_esriwkt` functions. Usage:<br>
-`make_prj(shp_file_name, epsg`
+`make_prj(shp_file_name, epsg)`
 
 | Input arguments | Type | Description |
 |-----------------|------|-------------|
 | `shp_file_name` | String | Shapefile name (with directory e.g., `"C:/temp/poly.shp"`).|
 | `epsg` | Integer | [*EPSG* Authority Code](https://hydro-informatics.github.io/geospatial-data.html#prj)|
 
-Output: None.
+***return:*** `None`.
 
 ### Re-project any gdal.Dataset (`reproject`)
 Re-project any raster or vector dataset to the projection and spatial reference system of another raster or vector dataset. Usage:<br>
@@ -233,7 +233,7 @@ Re-project any raster or vector dataset to the projection and spatial reference 
 |`source_dataset` | gdal.Dataset | Shapefile or raster to re-project.|
 |`new_projection_dataset`| gdal.Dataset | A shapefile or raster containing the target projection.|
 
-Output: None (creates a new shapefile or raster in the directory of the `source_dataset`).
+***return:*** `None` (creates a new shapefile or raster in the directory of the `source_dataset`).
 
 
 ## Dataset management (general functions for raster and vector datasets) 
@@ -257,7 +257,7 @@ Usage (offset to coordinates): `x_coord, y_coord = offset2oords(geo_transform, o
 |`x_coord`| Float | x-value of a pixel or point.|
 |`y_coord`| Float | y-value of a pixel or point.|
 
-Output: offset_x, offset_y (both integer of pixel numbers) or x_coord, y_coord (both float coordinates). 
+***return:*** `offset_x`, `offset_y` (both integer of pixel numbers) or `x_coord`, `y_coord` (both float coordinates). 
 
 
 ### Get layer and dataset type info
@@ -268,7 +268,7 @@ Usage: `get_layer(dataset, band_number=1)`
 | `dataset` | osgeo.gdal.Dataset or osgeo.ogr.DataSource | Raster or vector dataset to verify.|
 |`band_number`| Integer | OPTIONAL to indicate the raster band number to open (default: 1).|
 
-Output: Dictionary of `{"type": "raster" or "vector", "layer": osgeo.gdal.Band (if raster)  or osgeo.ogr.Layer (if vector)}` (application example: `srs_mgmt.reproject(DATASET, DATASET)`). 
+***return:*** `dictionary` of `{"type": "raster" or "vector", "layer": osgeo.gdal.Band (if raster)  or osgeo.ogr.Layer (if vector)}` (application example: `srs_mgmt.reproject(DATASET, DATASET)`). 
 
 ### Verify dataset type info
 Usage: `verify_dataset(dataset)`
@@ -277,7 +277,7 @@ Usage: `verify_dataset(dataset)`
 |-----------------|------|-------------|
 | `dataset` | osgeo.gdal.Dataset or osgeo.ogr.DataSource | Raster or vector dataset to verify.|
 
-Output: String (either `"mixed"`, `"raster"`, or `"vector"`). 
+***return:*** `string` (either `"mixed"`, `"raster"`, or `"vector"`). 
 
 ## Dataset conversion
 
@@ -299,7 +299,7 @@ Usage: `int_raster_file_name = float2int(raster_file_name, band_number)`
 |`raster_file_name` | String | Of a (relative) directory (ends on `".tif"`, e.g., `"C:/temp/a_grid.tif"`) of raster with pixel data types only.|
 |`band_number`| Integer | OPTIONAL to indicate the raster band number to open (default: 1).|
 
-Output: *String* of the integer raster file name (i.e., a raster with an `_int.tif` suffix is created in the same directory and with the same raster file name prefix as `raster_file_name`). For example: `"C:/rasters/flow_depth_int.tif"`.
+***return:*** *String* of the integer raster file name (i.e., a raster with an `_int.tif` suffix is created in the same directory and with the same raster file name prefix as `raster_file_name`). For example: `"C:/rasters/flow_depth_int.tif"`.
 
 ### Convert raster to line shapefile
 Convert a raster to a line shapefile based on a user-specific value of pixels (`pixel_value`) to connect.<br>
@@ -311,7 +311,7 @@ Usage: `raster2line(raster_file_name, out_shp_fn, pixel_value)`
 |`out_shp_fn` | String | Output shapefile name (with directory e.g., `"C:/temp/poly.shp"`).|
 |`pixel_value` | Integer or Float | Pixel value to select pixels to connect with lines.|
 
-Output: None (produces a line shapefile based on a `wkbMultiLineString`, with the name define in the `out_shp_fn` argument).
+***return:*** `None` (produces a line shapefile based on a `wkbMultiLineString`, with the name define in the `out_shp_fn` argument).
 
 ### Convert raster to polygon shapefile
 
@@ -324,7 +324,7 @@ Usage: `raster2polygon(file_name, band_number=1, out_shp_fn="", layer_name="base
 |`out_shp_fn` | String | shapefile name (with directory e.g., `"C:/temp/poly.shp"`).|
 |`field_name` | String | Name for the field where the values of the raster are stored (default=`"values"`).|
 
-Output: None (produces a polygon shapefile with `gdal.Polygonize`, with the name define in the `out_shp_fn` argument).
+***return:*** `osgeo.ogr.DataSource` (produces a polygon shapefile with `gdal.Polygonize`, with the name define in the `out_shp_fn` argument).
 
 ### Rasterize
 Convert any shapefile to a raster by burning values of its features to a raster.

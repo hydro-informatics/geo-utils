@@ -95,7 +95,7 @@ def raster2polygon(file_name, out_shp_fn, band_number=1, field_name="values"):
     :param out_shp_fn: STR of a shapefile name (with directory e.g., "C:/temp/poly.shp")
     :param band_number: INT of the raster band number to open (default: 1)
     :param field_name: STR of the field where raster pixel values will be stored (default: "values")
-    :return: None
+    :return: osgeo.ogr.DataSource
     """
     # ensure that the input raster contains integer values only and open the input raster
     file_name = float2int(file_name)
@@ -116,6 +116,8 @@ def raster2polygon(file_name, out_shp_fn, band_number=1, field_name="values"):
     srs = get_srs(raster)
     make_prj(out_shp_fn, int(srs.GetAuthorityCode(None)))
     print("Success: Wrote %s" % str(out_shp_fn))
+
+    return new_shp
 
 
 def rasterize(in_shp_file_name, out_raster_file_name, pixel_size=10, no_data_value=-9999,

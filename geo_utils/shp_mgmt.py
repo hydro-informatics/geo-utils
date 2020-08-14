@@ -46,6 +46,8 @@ def create_shp(shp_file_dir, overwrite=True, *args, **kwargs):
             print("Error: Invalid layer_type provided (must be 'point', 'line', or 'polygon').")
         except TypeError:
             print("Error: layer_name and layer_type must be string.")
+        except AttributeError:
+            print("Error: Cannot access layer - opened in other program?")
     return new_shp
 
 
