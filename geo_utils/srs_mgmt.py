@@ -170,6 +170,7 @@ def reproject_raster(source_dataset, source_srs, target_srs):
     create_raster(tar_file_name, raster_array=tar_dataset.ReadAsArray(),
                   epsg=int(target_srs.GetAuthorityCode(None)),
                   geo_info=tar_dataset.GetGeoTransform())
+    print("Saved reprojected raster as %s" % tar_file_name)
 
 
 def reproject_shapefile(source_dataset, source_layer, source_srs, target_srs):
