@@ -13,7 +13,7 @@ def float2int(raster_file_name, band_number=1):
     try:
         array = array.astype(int)
     except ValueError:
-        print("ERROR: Invalid raster pixel values.")
+        print("Error: Invalid raster pixel values.")
         return raster_file_name
     new_name = raster_file_name.split(".tif")[0] + "_int.tif"
 
@@ -24,7 +24,7 @@ def float2int(raster_file_name, band_number=1):
         return raster_file_name
 
     # create integer raster
-    print("Info: Creating integer raster: \n>> %s" % new_name)
+    print(" * info: creating integer raster to Polygonize:\n   >> %s" % new_name)
     create_raster(new_name, array, epsg=int(src_srs.GetAuthorityCode(None)),
                   rdtype=gdal.GDT_Int32, geo_info=geo_transform)
     return new_name
@@ -48,7 +48,7 @@ def raster2line(raster_file_name, out_shp_fn, pixel_value):
     # extract pixels with the user-defined pixel value from the raster array
     trajectory = np.where(array == pixel_value)
     if np.count_nonzero(trajectory) is 0:
-        print("ERROR: The defined pixel_value (%s) does not occur in the raster band." % str(pixel_value))
+        print("Error: The defined pixel_value (%s) does not occur in the raster band." % str(pixel_value))
         return None
 
     # convert pixel offset to coordinates and append to nested list of points
@@ -85,16 +85,19 @@ def raster2line(raster_file_name, out_shp_fn, pixel_value):
     # create projection file
     srs = get_srs(raster)
     make_prj(out_shp_fn, int(srs.GetAuthorityCode(None)))
-    print("Success: Wrote %s" % str(out_shp_fn))
+    print(" * success (raster2line): wrote %s" % str(out_shp_fn))
 
 
-def raster2polygon(file_name, out_shp_fn, band_number=1, field_name="values"):
+def raster2polygon(file_name, out_shp_fn, band_number=1, field_name="values",
+                   add_area=False):
     """
     Convert a raster to polygon
     :param file_name: STR of target file name, including directory; must end on ".tif"
     :param out_shp_fn: STR of a shapefile name (with directory e.g., "C:/temp/poly.shp")
     :param band_number: INT of the raster band number to open (default: 1)
     :param field_name: STR of the field where raster pixel values will be stored (default: "values")
+    :param add_area: BOOL (if True, an "area" field will be added, where the area
+                                in the shapefiles unit system is calculated - default: False)
     :return: osgeo.ogr.DataSource
     """
     # ensure that the input raster contains integer values only and open the input raster
@@ -115,8 +118,7 @@ def raster2polygon(file_name, out_shp_fn, band_number=1, field_name="values"):
     # create projection file
     srs = get_srs(raster)
     make_prj(out_shp_fn, int(srs.GetAuthorityCode(None)))
-    print("Success: Wrote %s" % str(out_shp_fn))
-
+    print(" * success (Polygonize): wrote %s" % str(out_shp_fn))
     return new_shp
 
 
@@ -137,7 +139,7 @@ def rasterize(in_shp_file_name, out_raster_file_name, pixel_size=10, no_data_val
     try:
         source_ds = ogr.Open(in_shp_file_name)
     except RuntimeError as e:
-        print("ERROR: Could not open %s." % str(in_shp_file_name))
+        print("Error: Could not open %s." % str(in_shp_file_name))
         return None
     source_lyr = source_ds.GetLayer()
 
@@ -152,7 +154,7 @@ def rasterize(in_shp_file_name, out_raster_file_name, pixel_size=10, no_data_val
     try:
         target_ds = gdal.GetDriverByName('GTiff').Create(out_raster_file_name, x_res, y_res, 1, eType=rdtype)
     except RuntimeError as e:
-        print("ERROR: Could not create %s." % str(out_raster_file_name))
+        print("Error: Could not create %s." % str(out_raster_file_name))
         return None
     target_ds.SetGeoTransform((x_min, pixel_size, 0, y_max, 0, -pixel_size))
     band = target_ds.GetRasterBand(1)
@@ -178,7 +180,7 @@ def rasterize(in_shp_file_name, out_raster_file_name, pixel_size=10, no_data_val
             gdal.RasterizeLayer(target_ds, [1], source_lyr, None, None, burn_values=[0],
                                 options=["ALL_TOUCHED=TRUE"])
     except RuntimeError as e:
-        print("ERROR: Could not rasterize (burn values from %s)." % str(in_shp_file_name))
+        print("Error: Could not rasterize (burn values from %s)." % str(in_shp_file_name))
         return None
 
     # release raster band
