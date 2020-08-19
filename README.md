@@ -315,14 +315,14 @@ Usage: `raster2line(raster_file_name, out_shp_fn, pixel_value)`
 
 ### Convert raster to polygon shapefile
 
-Usage: `raster2polygon(file_name, band_number=1, out_shp_fn="", layer_name="basemap")`
+Usage: `raster2polygon(file_name, out_shp_fn, band_number=1, field_name="values")`
 
 | Input arguments | Type | Description |
 |-----------------|------|-------------|
 |`raster_file_name` | String | Of a (relative) directory (ends on `".tif"`, e.g., `"C:/temp/a_grid.tif"`) of raster with **INTEGER** pixel data types only. If *Float* data is provided, the function automatically uses `float2int`.|
-|`band_number`| Integer | OPTIONAL to indicate the raster band number to open (default: 1).|
 |`out_shp_fn` | String | shapefile name (with directory e.g., `"C:/temp/poly.shp"`).|
-|`field_name` | String | Name for the field where the values of the raster are stored (default=`"values"`).|
+|`band_number`| Integer | OPTIONAL to indicate the raster band number to open (default: 1).|
+|`field_name` | String | OPTIONAL name for the field where the values of the raster are stored (default=`"values"`).|
 
 ***return:*** `osgeo.ogr.DataSource` (produces a polygon shapefile with `gdal.Polygonize`, with the name define in the `out_shp_fn` argument).
 

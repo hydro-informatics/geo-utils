@@ -88,8 +88,7 @@ def raster2line(raster_file_name, out_shp_fn, pixel_value):
     print(" * success (raster2line): wrote %s" % str(out_shp_fn))
 
 
-def raster2polygon(file_name, out_shp_fn, band_number=1, field_name="values",
-                   add_area=False):
+def raster2polygon(file_name, out_shp_fn, band_number=1, field_name="values"):
     """
     Convert a raster to polygon
     :param file_name: STR of target file name, including directory; must end on ".tif"
