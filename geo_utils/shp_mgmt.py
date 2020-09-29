@@ -139,6 +139,7 @@ def polygon_from_shapepoints(shapepoints, polygon, alpha=np.nan):
     if np.isfinite(alpha):
         try:
             poly = alphashape.alphashape(gdf, alpha)
+            poly.to_file(polygon)
         except FileNotFoundError as e:
             print(e)
     else:
