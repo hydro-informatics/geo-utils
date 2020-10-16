@@ -26,7 +26,7 @@ def create_shp(shp_file_dir, overwrite=True, *args, **kwargs):
             shp_driver.DeleteDataSource(shp_file_dir)
         else:
             print("ERROR: Shapefile already exists and overwrite=False.")
-            print("       Delete existing shaepfile and/or use overwrite=True (default).")
+            print("       Delete existing shapefile and/or use overwrite=True (default).")
             return None
 
     # create and return new shapefile object
