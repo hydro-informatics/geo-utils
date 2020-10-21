@@ -29,13 +29,14 @@ def open_raster(file_name, band_number=1):
 
 
 def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=10, pixel_height=10,
-                  nan_val=nan_value, rdtype=gdal.GDT_Float32, geo_info=False):
+                  nan_val=nan_value, origin_anchor=None, rdtype=gdal.GDT_Float32, geo_info=False):
     """
     Convert a numpy.array to a GeoTIFF raster with the following parameters
     :param file_name: STR of target file name, including directory; must end on ".tif"
     :param raster_array: np.array of values to rasterize
     :param origin: TUPLE of (x, y) origin coordinates
     :param epsg: INT of EPSG:XXXX projection to use - default=4326
+    :param origin_anchor: `str` e.g. 'BottomLeft'
     :param pixel_height: INT of pixel height (multiple of unit defined with the EPSG number) - default=10m
     :param pixel_width: INT of pixel width (multiple of unit defined with the EPSG number) - default=10m
     :param nan_val: INT/FLOAT no-data value to be used in the raster (replaces non-numeric and np.nan in array)
@@ -67,6 +68,10 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
 
     # apply geo-origin and pixel dimensions
     if not geo_info:
+        flip_angle = 0
+        if origin_anchor:
+            if not origin_anchor is "TopLeft":
+                flip_angle = -180
         try:
             origin_x = origin[0]
             origin_y = origin[1]
@@ -74,7 +79,7 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
             print("ERROR: Wrong origin format (required: (INT, INT) - provided: %s)." % str(origin))
             return -1
         try:
-            new_raster.SetGeoTransform((origin_x, pixel_width, 0, origin_y, 0, pixel_height))
+            new_raster.SetGeoTransform((origin_x, pixel_width, flip_angle, origin_y, 0, pixel_height))
         except RuntimeError as e:
             print("ERROR: Invalid origin (must be INT) or pixel_height/pixel_width (must be INT) provided.")
             return -1
