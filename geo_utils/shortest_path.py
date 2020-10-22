@@ -1,5 +1,5 @@
 import networkx as nx
-from .geo_tools import *
+from .geo_utils import *
 import json
 from shapely.geometry import asLineString, asMultiPoint
 
@@ -9,12 +9,15 @@ from shapely.geometry import asLineString, asMultiPoint
 
 
 def create_shortest_path(line_shp_name, start_node_id, end_node_id):
-    """
-    Calcluate shortest path from a network of lines
-    :param line_shp_name: STR of the input shapefile name
-    :param start_node_id: INT of the start node
-    :param end_node_id: INT of the end node
-    :return: graph of nodes (coordinate pairs) connecting point1 and point2 via the provided Line_shp_name
+    """Calculates the shortest path from a network of lines.
+    
+    Args:
+        line_shp_name (str): Input shapefile name
+        start_node_id (int): Start node ID
+        end_node_id (int): End node ID
+
+    Returns:
+        None: Creates a graph of nodes (coordinate pairs) connecting a start node with an end node in the defined ``line_shp_name``.
     """
 
     # load shapefile
@@ -48,20 +51,28 @@ def create_shortest_path(line_shp_name, start_node_id, end_node_id):
 
 
 def get_path(n0, n1, nx_list_subgraph):
-    """n0 and n1 are connected nodes
-    :param n0: Node 1
-    :param n1: Node 2
-    :param nx_list_subgraph: LIST (see create shortest path)
-    :return: array of point coordinates along the line linking these two nodes."""
+    """Get path between nodes ``n0`` and ``n1``.
+    
+    Args:
+        n0 (int): Node 1
+        n1 (int): Node 2
+        nx_list_subgraph (list):(see create shortest path)
+        
+    Returns: 
+        ndarray: An array of point coordinates along the line linking these two nodes.
+    """
     return np.array(json.loads(nx_list_subgraph[n0][n1]['Json'])['coordinates'])
 
 
 def get_full_path(path, nx_list_subgraph):
-    """
-    Create numpy array line result
-    :param path: STR (result of nx.shortest_path)
-    :param nx_list_subgraph: LIST (see create shortest path)
-    :return: coordinate pairs along a path
+    """Creates a numpy array of the line result.
+    
+    Args:
+        path (str): Result of ``nx.shortest_path``
+        nx_list_subgraph (list): See ``create_shortest path`` function
+        
+    Returns: 
+        ndarray: Coordinate pairs along a path.
     """
     p_list = []
     curp = None
@@ -77,11 +88,14 @@ def get_full_path(path, nx_list_subgraph):
 
 
 def write_geojson(outfilename, indata):
-    """
-    Creates a new GeoJSON file
-    :param outfilename: name of output file
-    :param indata:
-    :return: a new GeoJSON file
+    """Creates a new GeoJSON file
+
+    Args>
+        outfilename (str): Name for the output file
+        indata (array): Array to write tyo the geojson file.
+
+    Returns: 
+        Creates a new GeoJSON file.
     """
     with open(outfilename, "w") as file_out:
         file_out.write(json.dumps(indata))

@@ -5,17 +5,20 @@ try:
     import os
     import alphashape
 except ModuleNotFoundError as e:
-    print(e)
+    logging.error(e)
 
 
 def create_shp(shp_file_dir, overwrite=True, *args, **kwargs):
-    """
-    Create a new shapefile with a defined geometry type (optional)
-    :param shp_file_dir: STR of the (relative) shapefile directory (ends on ".shp")
-    :param overwrite: [optional] BOOL - if True, existing files are overwritten
-    :kwarg layer_name: [optional] STR of the layer_name - if None: no layer will be created
-    :kwarg layer_type: [optional] STR ("point, "line", or "polygon") of the layer_name - if None: no layer will be created
-    :output: ogr shapefile (osgeo.ogr.DataSource)
+    """Creates a new shapefile with an optionally defined geometry type.
+    
+    Args:
+        shp_file_dir (str): of the (relative) shapefile directory (ends on ``".shp"``). 
+        overwrite (bool): If ``True`` (default), existing files are overwritten.
+        layer_name (str): The layer name to be created. If ``None``: no layer will be created.
+        layer_type (str): Either ``"point"``, ``"line"``, or ``"polygon"`` of the ``layer_name``. If ``None``: no layer will be created.
+        
+    Returns:
+        osgeo.ogr.DataSource: An ``ogr`` shapefile
     """
     shp_driver = ogr.GetDriverByName("ESRI Shapefile")
     shp_file_dir = verify_shp_name(shp_file_dir)
@@ -25,8 +28,7 @@ def create_shp(shp_file_dir, overwrite=True, *args, **kwargs):
         if overwrite:
             shp_driver.DeleteDataSource(shp_file_dir)
         else:
-            print("ERROR: Shapefile already exists and overwrite=False.")
-            print("       Delete existing shapefile and/or use overwrite=True (default).")
+            logging.error("Shapefile already exists and overwrite=False. Delete existing shapefile and/or use overwrite=True (default).")
             return None
 
     # create and return new shapefile object
@@ -53,10 +55,13 @@ def create_shp(shp_file_dir, overwrite=True, *args, **kwargs):
 
 
 def get_geom_description(layer):
-    """
-    Get the WKB Geometry Type as string from a shapefile layer
-    :param layer: osgeo.ogr.Layer
-    :output: STR of wkbGEOMETRY-TYPE
+    """Gets the WKB Geometry Type as string from a shapefile layer.
+    
+    Args:
+        layer (osgeo.ogr.Layer): A shapefile layer.
+        
+    Returns:
+        str:  WKB (binary) geometry type
     """
     type_dict = {0: "wkbUnknown", 1: "wkbPoint", 2: "wkbLineString", 3: "wkbPolygon",
                  4: "wkbMultiPoint", 5: "wkbMultiLineString", 6: "wkbMultiPolygon",
@@ -83,21 +88,24 @@ def get_geom_description(layer):
     try:
         geom_type = layer.GetGeom()
     except AttributeError:
-        print("ERROR: Invalid input: %s is empty or not osgeo.ogr.Layer." % str(layer))
+        logging.error("Invalid input: %s is empty or not osgeo.ogr.Layer." % str(layer))
         return type_dict[0]
     try:
         return type_dict[geom_type]
     except KeyError:
-        print("ERROR: Unknown WKB Geometry Type.")
+        logging.error("Unknown WKB Geometry Type.")
         return type_dict[0]
 
 
 def get_geom_simplified(layer):
-    """
-    Get a simplified geometry description (either point, line, or polygon) as a function of
-     the WKB Geometry Type of a shapefile layer
-    :param layer: osgeo.ogr.Layer
-    :output: STR of either point, line, or polygon (or unknown if invalid layer)
+    r"""Gets a simplified geometry description (either point, line, or polygon) as a function of
+     the WKB Geometry Type of a shapefile layer.
+         
+    Args:
+        layer (osgeo.ogr.Layer): A shapefile layer.
+       
+    Returns:
+        str: Either WKT-formatted point, line, or polygon (or unknown if invalid layer).
     """
     wkb_geom = get_geom_description(layer)
     if "point" in wkb_geom.lower():
@@ -110,15 +118,19 @@ def get_geom_simplified(layer):
 
 
 def verify_shp_name(shp_file_name, shorten_to=13):
-    """
-    Ensure that the shapefile name does not exceed 13 characters or shorten the shp_file_name length
-    to N characters
-    :param shp_file_name: STR of a shapefile name (with directory e.g., "C:/temp/poly.shp")
-    :param shorten_to: INT of the number of characters the shapefile name should have - default=13
-    :output: STR of shapefile name (including path if provided) with a length of shorten_to
+    """Ensure that the shapefile name does not exceed 13 characters. Otherwise, the function shortens the ``shp_file_name`` length
+    to N characters.
+        
+    Args:
+        shp_file_name (str): A shapefile name (with directory e.g., ``"C:/temp/poly.shp"``).
+        shorten_to (int): The number of characters the shapefile name should have (default: ``13``).
+    
+    Returns:
+        str: A shapefile name (including path if provided) with a length of ``shorten_to``.
     """
     pure_fn = shp_file_name.split(".shp")[0].split("/")[-1].split("\\")[-1]
     shp_dir = shp_file_name.strip(shp_file_name.split("/")[-1].split("\\")[-1])
+
     if pure_fn.__len__() > shorten_to:
         print("Shapefile name too long (applying auto-shortening to %s characters)." % str(shorten_to))
         return shp_dir + pure_fn[0: shorten_to - 1] + ".shp"
@@ -127,12 +139,15 @@ def verify_shp_name(shp_file_name, shorten_to=13):
 
 
 def polygon_from_shapepoints(shapepoints, polygon, alpha=np.nan):
-    """
-    Create a polygon around a cloud of shapepoints
-    :param shapepoints: shape points filename, including directory.
-    :param polygon: target filename, including directory.
-    :param alpha: coefficient to adjust; the lower it is, the more slim will be the polygon.
-    :output: saves the polygon shapefile in the selected path
+    """Creates a polygon around a cloud of ``shapepoints``.
+        
+    Args:
+        shapepoints (str): Point shapefile name, including its directory.
+        polygon (str): Target shapefile filename, including its directory.
+        alpha (float): Coefficient to adjust; the lower it is, the more slim will be the polygon.
+    
+    Returns:
+        None: Creates the polygon shapefile defined with ``polygon``.
     """
     gdf = geopandas.read_file(shapepoints)
 
@@ -141,12 +156,12 @@ def polygon_from_shapepoints(shapepoints, polygon, alpha=np.nan):
         try:
             poly = alphashape.alphashape(gdf, alpha)
             poly.to_file(polygon)
-        except FileNotFoundError as e:
-            print(e)
+        except FileNotFoundError as err:
+            print(err)
     else:
         try:
             poly = alphashape.alphashape(gdf)
-        except FileNotFoundError as e:
-            print(e)
+        except FileNotFoundError as err:
+            print(err)
         else:
             poly.to_file(polygon)

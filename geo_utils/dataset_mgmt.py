@@ -4,12 +4,15 @@ gdal.UseExceptions()
 
 
 def coords2offset(geo_transform, x_coord, y_coord):
-    """
-    Returns x-y pixel offset (inverse of offset2coords function)
-    :param geo_transform: osgeo.gdal.Dataset.GetGeoTransform() object
-    :param x_coord: FLOAT of x-coordinate
-    :param y_coord: FLOAT of y-coordinate
-    :return: offset_x, offset_y (both integer of pixel numbers)
+    """ Returns x-y pixel offset (inverse of the ``offset2coords`` function).
+
+    Args:
+        geo_transform: osgeo.gdal.Dataset.GetGeoTransform() object
+        x_coord (float): x-coordinate
+        y_coord (float): y-coordinate
+
+    Returns:
+        tuple: Number of pixels ``(offset_x, offset_y)``,  both ``int``s.
     """
     try:
         origin_x = geo_transform[0]
@@ -17,24 +20,27 @@ def coords2offset(geo_transform, x_coord, y_coord):
         pixel_width = geo_transform[1]
         pixel_height = geo_transform[5]
     except IndexError:
-        print("ERROR: Invalid geo_transform object (%s)." % str(geo_transform))
+        logging.error("Invalid geo_transform object (%s)." % str(geo_transform))
         return None
 
     try:
         offset_x = int((x_coord - origin_x) / pixel_width)
         offset_y = int((y_coord - origin_y) / pixel_height)
     except ValueError:
-        print("ERROR: geo_transform tuple contains non-numeric data: %s" % str(geo_transform))
+        logging.error("geo_transform tuple contains non-numeric data: %s" % str(geo_transform))
         return None
     return offset_x, offset_y
 
 
 def get_layer(dataset, band_number=1):
-    """
-    Get a layer=band (RasterDataSet) or layer=ogr.Dataset.Layer() of any dataset
-    :param dataset: osgeo.gdal.Dataset or osgeo.ogr.DataSource
-    :param band_number: ONLY FOR RASTERS - INT of the raster band number to open (default: 1)
-    :output: DICT {GEO-TYPE: if raster: raster_band, if vector: GetLayer(), else: None}
+    """Gets a ``layer=band`` (``RasterDataSet``) or ``layer=ogr.Dataset.Layer`` of any dataset.
+
+    Args:
+        dataset (``osgeo.gdal.Dataset`` or ``osgeo.ogr.DataSource``): Either a raster or a shapefile.
+        band_number (int): Only use with rasters to define a band number to open (default=``1``).
+    
+    Returns: 
+        dict: ``{GEO-TYPE: if raster: raster_band, if vector: GetLayer(), else: None}``
     """
     if verify_dataset(dataset) == "raster":
         return {"type": "raster", "layer": dataset.GetRasterBand(band_number)}
@@ -44,12 +50,15 @@ def get_layer(dataset, band_number=1):
 
 
 def offset2coords(geo_transform, offset_x, offset_y):
-    """
-    Returns x-y coordinates from pixel offset (inverse of coords2offset function)
-    :param geo_transform: osgeo.gdal.Dataset.GetGeoTransform() object
-    :param offset_x: integer of x pixel numbers
-    :param offset_y: integer of y pixel numbers
-    :return: x_coord, y_coord (FLOATs of x-y-coordinates)
+    """Returns x-y coordinates from pixel offset (inverse of ``coords2offset`` function).
+
+    Args:
+        geo_transform (osgeo.gdal.Dataset.GetGeoTransform): The geo transformation to use.
+        offset_x (int): x number of pixels.
+        offset_y (int): y number of pixels.
+        
+    Returns:
+        tuple: ``float``s of x-y-coordinates ``(x_coord, y_coord)``.
     """
     try:
         origin_x = geo_transform[0]
@@ -57,23 +66,26 @@ def offset2coords(geo_transform, offset_x, offset_y):
         pixel_width = geo_transform[1]
         pixel_height = geo_transform[5]
     except IndexError:
-        print("ERROR: Invalid geo_transform object (%s)." % str(geo_transform))
+        logging.error("Invalid geo_transform object (%s)." % str(geo_transform))
         return None
 
     try:
         coord_x = origin_x + pixel_width * (offset_x + 0.5)
         coord_y = origin_y + pixel_height * (offset_y + 0.5)
     except ValueError:
-        print("ERROR: geo_transform tuple contains non-numeric data: %s" % str(geo_transform))
+        logging.error("geo_transform tuple contains non-numeric data: %s" % str(geo_transform))
         return None
     return coord_x, coord_y
 
 
 def verify_dataset(dataset):
-    """
-    Verify if a dataset contains raster or vector data
-    :param dataset: osgeo.gdal.Dataset or osgeo.ogr.DataSource
-    :return: String (either "mixed", "raster", or "vector")
+    """Verifies if a dataset contains raster or vector data.
+
+    Args:
+        dataset (``osgeo.gdal.Dataset`` or ``osgeo.ogr.DataSource``): Dataset to verify.
+    
+    Returns:
+        string: Either "mixed", "raster", or "vector".
     """
     # Check the contents of an osgeo.gdal.Dataset
     try:
@@ -94,5 +106,5 @@ def verify_dataset(dataset):
         else:
             return "empty"
     except AttributeError:
-        print("ERROR: %s is not an osgeo.gdal.Dataset object." % str(dataset))
+        logging.error("%s is not an osgeo.gdal.Dataset object." % str(dataset))
         return None

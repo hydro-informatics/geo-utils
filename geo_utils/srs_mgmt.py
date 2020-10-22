@@ -3,11 +3,16 @@ import urllib
 
 
 def get_esriwkt(epsg):
-    """
-    Get esriwkt-formatted spatial references with epsg code online
-    Usage: get_esriwkt(4326)
-    :param epsg: Int of epsg
-    :output: str containing esriwkt (if error: default epsg=4326 is used)
+    """Gets esriwkt-formatted spatial references with epsg code online.
+
+    Args:
+        epsg (int): EPSG Authority Code
+
+    Returns:
+        str: An esriwkt string (if an error occur, the default epsg=``4326`` is used).
+
+    Example:
+        ``get_esriwkt(4326)``
     """
     try:
         with urllib.request.urlopen("http://spatialreference.org/ref/epsg/{0}/esriwkt/".format(epsg)) as response:
@@ -22,16 +27,19 @@ def get_esriwkt(epsg):
         # sr-org codes are available at "https://spatialreference.org/ref/sr-org/{0}/esriwkt/".format(epsg)
         # for example EPSG:3857 = SR-ORG:6864 -> https://spatialreference.org/ref/sr-org/6864/esriwkt/ = EPSG:3857
     except Exception as e:
-        print("ERROR: Could not find epsg code on spatialreference.org. Returning default WKT(epsg=4326).")
+        logging.error("Could not find epsg code on spatialreference.org. Returning default WKT(epsg=4326).")
         print(e)
         return 'GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295],UNIT["Meter",1]]'
 
 
 def get_srs(dataset):
-    """
-    Get the spatial reference of any gdal.Dataset
-    :param dataset: gdal.Dataset (shapefile or raster)
-    :output: osr.SpatialReference
+    """Gets the spatial reference of any ``gdal.Dataset``.
+
+    Args:
+        dataset (gdal.Dataset): A shapefile or raster.
+
+    Returns:
+        osr.SpatialReference: A spatial reference object.
     """
     gdal.UseExceptions()
 
@@ -42,7 +50,7 @@ def get_srs(dataset):
         try:
             sr = osr.SpatialReference(str(dataset.GetLayer().GetSpatialRef()))
         except AttributeError:
-            print("ERROR: Invalid source data (%s)." % str(dataset))
+            logging.error("Invalid source data (%s)." % str(dataset))
             return None
     # auto-detect epsg
     try:
@@ -51,32 +59,35 @@ def get_srs(dataset):
             sr = sr.FindMatches()[0][0]  # Find matches returns list of tuple of SpatialReferences
             sr.AutoIdentifyEPSG()
     except TypeError:
-        print("ERROR: Empty spatial reference.")
+        logging.error("Empty spatial reference.")
         return None
     # assign input SpatialReference
     try:
         sr.ImportFromEPSG(int(sr.GetAuthorityCode(None)))
     except TypeError:
-        print("ERROR: Could not retrieve authority code (EPSG import failed).")
+        logging.error("Could not retrieve authority code (EPSG import failed).")
     return sr
 
 
 def get_wkt(epsg, wkt_format="esriwkt"):
-    """
-    Get WKT-formatted projection information for an epsg code using the osr library
-    :param epsg: Int of epsg
-    :param wkt_format: Str of wkt format (default is esriwkt for shapefile projections)
-    :output: str containing WKT (if error: default epsg=4326 is used)
+    """Gets WKT-formatted projection information for an epsg code using the ``osr`` library.
+
+    Args:
+        epsg (int): epsg Authority code
+        wkt_format (str): of wkt format (default is esriwkt for shapefile projections)
+      
+    Returns:
+        str: WKT (if error: returns default corresponding to ``epsg=4326``).
     """
     default = 'GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.017453292519943295],UNIT["Meter",1]]'
     spatial_ref = osr.SpatialReference()
     try:
         spatial_ref.ImportFromEPSG(epsg)
     except TypeError:
-        print("ERROR: epsg must be integer. Returning default WKT(epsg=4326).")
+        logging.error("epsg must be integer. Returning default WKT(epsg=4326).")
         return default
     except Exception:
-        print("ERROR: epsg number does not exist. Returning default WKT(epsg=4326).")
+        logging.error("epsg number does not exist. Returning default WKT(epsg=4326).")
         return default
     if wkt_format == "esriwkt":
         spatial_ref.MorphToESRI()
@@ -84,10 +95,11 @@ def get_wkt(epsg, wkt_format="esriwkt"):
 
 
 def make_prj(shp_file_name, epsg):
-    """
-    Generate a projection file for a shapefile
-    :param shp_file_name: STR of a shapefile name (with directory e.g., "C:/temp/poly.shp")
-    :param epsg: INT of epsg
+    """Generates a projection file for a shapefile.
+
+    Args:
+        shp_file_name (str): of a shapefile name (with directory e.g., ``"C:/temp/poly.shp"``).
+        epsg (int): EPSG Authority Code
     """
     shp_dir = shp_file_name.strip(shp_file_name.split("/")[-1].split("\\")[-1])
     shp_name = shp_file_name.split(".shp")[0].split("/")[-1].split("\\")[-1]
@@ -96,12 +108,15 @@ def make_prj(shp_file_name, epsg):
 
 
 def reproject(source_dataset, new_projection_dataset):
-    """
-    Re-project a dataset (raster or shapefile) onto the spatial reference system
-    of a (shapefile or raster) layer
-    :param source_dataset: gdal.Dataset (shapefile or raster)
-    :param new_projection_dataset: gdal.Dataset (shapefile or raster) with new projection info
-    :output: if source==raster: GeoTIFF in same directory as source with "_reprojected"
+    """Re-projects a dataset (raster or shapefile) onto the spatial reference system
+    of a (shapefile or raster) layer.
+
+    Args:
+        source_dataset (gdal.Dataset): Shapefile or raster.
+        new_projection_dataset (gdal.Dataset): Shapefile or raster with new projection info.
+        
+    Returns:
+        None: If the source is a raster: Creates a GeoTIFF in same directory as source with a ``"_reprojected"`` suffix in the file name.
     """
 
     # get source and target spatial reference systems
@@ -119,11 +134,12 @@ def reproject(source_dataset, new_projection_dataset):
 
 
 def reproject_raster(source_dataset, source_srs, target_srs):
-    """
-    Reproject a raster dataset (preferably use through reproject function)
-    :param source_dataset: osgeo.ogr.DataSource (instantiate with ogr.Open(SHP-FILE))
-    :param source_srs: osgeo.osr.SpatialReference (instantiate with get_srs(source_dataset))
-    :param target_srs: osgeo.osr.SpatialReference (instantiate with get_srs(DATASET-WITH-TARGET-PROJECTION))
+    """Re-projects a raster dataset. This function is called by the ``reproject`` function.
+
+    Args:
+        source_dataset (osgeo.ogr.DataSource): Instantiates with an ``ogr.Open(SHP-FILE)``.
+        source_srs (osgeo.osr.SpatialReference): Instantiates with ``get_srs(source_dataset)``
+        target_srs (osgeo.osr.SpatialReference): Instantiates with ``get_srs(DATASET-WITH-TARGET-PROJECTION)``.
     """
     # READ THE SOURCE GEO TRANSFORMATION (ORIGIN_X, PIXEL_WIDTH, 0, ORIGIN_Y, 0, PIXEL_HEIGHT)
     src_geo_transform = source_dataset.GetGeoTransform()
@@ -170,16 +186,17 @@ def reproject_raster(source_dataset, source_srs, target_srs):
     create_raster(tar_file_name, raster_array=tar_dataset.ReadAsArray(),
                   epsg=int(target_srs.GetAuthorityCode(None)),
                   geo_info=tar_dataset.GetGeoTransform())
-    print("Saved reprojected raster as %s" % tar_file_name)
+    logging.info("Saved reprojected raster as %s" % tar_file_name)
 
 
 def reproject_shapefile(source_dataset, source_layer, source_srs, target_srs):
-    """
-    Reproject a shapefile dataset (preferably use through reproject function)
-    :param source_dataset: osgeo.ogr.DataSource (instantiate with ogr.Open(SHP-FILE))
-    :param source_layer:  osgeo.ogr.Layer (instantiate with source_dataset.GetLayer())
-    :param source_srs: osgeo.osr.SpatialReference (instantiate with get_srs(source_dataset))
-    :param target_srs: osgeo.osr.SpatialReference (instantiate with get_srs(DATASET-WITH-TARGET-PROJECTION))
+    """Re-projects a shapefile dataset. This function is called by the ``reproject`` function.
+
+    Args:
+        source_dataset (osgeo.ogr.DataSource): Instantiates with ``ogr.Open(SHP-FILE)``.
+        source_layer (osgeo.ogr.Layer ): Instantiates with ``source_dataset.GetLayer()``.
+        source_srs (osgeo.osr.SpatialReference): Instantiates with ``get_srs(source_dataset)``.
+        target_srs (osgeo.osr.SpatialReference): Instantiates with ``get_srs(DATASET-WITH-TARGET-PROJECTION)``.
     """
     # make GeoTransformation
     coord_trans = osr.CoordinateTransformation(source_srs, target_srs)
@@ -202,7 +219,7 @@ def reproject_shapefile(source_dataset, source_layer, source_srs, target_srs):
     try:
         feature = source_layer.GetNextFeature()
     except AttributeError:
-        print("ERROR: Invalid or empty vector dataset.")
+        logging.error("Invalid or empty vector dataset.")
         return None
     while feature:
         # get the input geometry

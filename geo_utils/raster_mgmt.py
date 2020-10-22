@@ -4,46 +4,51 @@ from .geoconfig import *
 
 
 def open_raster(file_name, band_number=1):
-    """
-    Open a raster file and access its bands
-    :param file_name: STR of a raster file directory and name
-    :param band_number: INT of the raster band number to open (default: 1)
-    :output: osgeo.gdal.Dataset, osgeo.gdal.Band objects
+    """Opens a raster file and accesses its bands.
+    
+    Args:
+        file_name (str): The raster file directory and name.
+        band_number (int): The Raster band number to open (default: ``1``).
+        
+    Returns:
+        osgeo.gdal.Dataset: A raster dataset a Python object.
+        osgeo.gdal.Band: The defined raster band as Python object.
     """
     gdal.UseExceptions()
     # open raster file or return None if not accessible
     try:
         raster = gdal.Open(file_name)
     except RuntimeError as e:
-        print("ERROR: Cannot open raster.")
+        logging.error("Cannot open raster.")
         print(e)
         return nan_value, nan_value
     # open raster band or return None if corrupted
     try:
         raster_band = raster.GetRasterBand(band_number)
     except RuntimeError as e:
-        print("ERROR: Cannot access raster band.")
-        print(e)
+        logging.error("Cannot access raster band.")
+        logging.error(e)
         return raster, nan_value
     return raster, raster_band
 
 
 def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=10, pixel_height=10,
                   nan_val=nan_value, rdtype=gdal.GDT_Float32, geo_info=False):
-    """
-    Convert a numpy.array to a GeoTIFF raster with the following parameters
-    :param file_name: STR of target file name, including directory; must end on ".tif"
-    :param raster_array: np.array of values to rasterize
-    :param origin: TUPLE of (x, y) origin (=the upper left x and y of the raster) coordinates
-    :param epsg: INT of EPSG:XXXX projection to use - default=4326
-    :param pixel_height: INT of pixel height (multiple of unit defined with the EPSG number) - default=10m
-    :param pixel_width: INT of pixel width (multiple of unit defined with the EPSG number) - default=10m
-    :param nan_val: INT/FLOAT no-data value to be used in the raster (replaces non-numeric and np.nan in array)
-                        default=nan_value
-    :param rdtype: gdal.GDALDataType raster data type - default=gdal.GDT_Float32 (32 bit floating point)
-    :param geo_info: TUPLE defining a gdal.DataSet.GetGeoTransform object (supersedes origin, pixel_width, pixel_height)
-                        default=False
-    :return new_raster: osgeo.gdal.Dataset (uses GTiff driver)
+    """Converts an ``ndarray`` (``numpy.array``) to a GeoTIFF raster.
+    
+    Args:
+        file_name (str): Target file name, including directory; must end on ``".tif"``.
+        raster_array (ndarray): Values to rasterize.
+        origin (tuple): Coordinates (x, y) of the origin.
+        epsg (int): EPSG:XXXX projection to use (default: ``4326``).
+        pixel_height (int): Pixel height as multiple of the base units defined with the EPSG number (default: ``10``meters).
+        pixel_width (int): Pixel width as multiple of the base units defined with the EPSG number (default: ``10``meters).
+        nan_val (``int`` or ``float``): No-data value to be used in the raster. Replaces non-numeric and ``np.nan`` in the ``ndarray``. (default: ``geoconfig.nan_value``).
+        rdtype: gdal.GDALDataType raster data type - default: gdal.GDT_Float32 (32 bit floating point)
+        geo_info (tuple): Defines a ``gdal.DataSet.GetGeoTransform`` object  and supersedes ``origin``, ``pixel_width``, ``pixel_height`` (default: ``False``).
+        
+    Returns:
+        int: ``0`` if successful, otherwise ``-1``.
     """
     gdal.UseExceptions()
     # check out driver
@@ -54,13 +59,13 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
         cols = raster_array.shape[1]
         rows = raster_array.shape[0]
     except TypeError:
-        print("ERROR: Provided array is not a numpy.ndarray.")
+        logging.error("Provided array is not a numpy.ndarray.")
         return -1
 
     try:
         new_raster = driver.Create(file_name, cols, rows, 1, eType=rdtype)
     except RuntimeError as e:
-        print("ERROR: Could not create %s." % str(file_name))
+        logging.error("Could not create %s." % str(file_name))
         return -1
     # replace np.nan values
     raster_array[np.isnan(raster_array)] = nan_val
@@ -71,18 +76,18 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
             origin_x = origin[0]
             origin_y = origin[1]
         except IndexError:
-            print("ERROR: Wrong origin format (required: (INT, INT) - provided: %s)." % str(origin))
+            logging.error("Wrong origin format (required: (INT, INT) - provided: %s)." % str(origin))
             return -1
         try:
             new_raster.SetGeoTransform((origin_x, pixel_width, 0, origin_y, 0, -pixel_height))
         except RuntimeError as e:
-            print("ERROR: Invalid origin (must be INT) or pixel_height/pixel_width (must be INT) provided.")
+            logging.error("Invalid origin (must be INT) or pixel_height/pixel_width (must be INT) provided.")
             return -1
     else:
         try:
             new_raster.SetGeoTransform(geo_info)
         except RuntimeError as e:
-            print(e)
+            logging.error(e)
             return -1
 
     # retrieve band number 1
@@ -96,7 +101,7 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
     try:
         srs.ImportFromEPSG(epsg)
     except RuntimeError as e:
-        print(e)
+        logging.error(e)
         return -1
     new_raster.SetProjection(srs.ExportToWkt())
 
@@ -106,11 +111,15 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
 
 
 def raster2array(file_name, band_number=1):
-    """
-    :param file_name: STR of target file name, including directory; must end on ".tif"
-    :param band_number: INT of the raster band number to open (default: 1)
-    :output: (1) ndarray() of the indicated raster band, where no-data values are replaced with np.nan
-             (2) the GeoTransformation used in the original raster
+    """Extracts an ``ndarray`` from a raster.
+    
+    Args:
+        file_name (str): Target file name, including directory; must end on ``".tif"``.
+        band_number (int): The raster band number to open (default: ``1``).
+        
+    Returns:
+        ndarray: Indicated raster band, where no-data values are replaced with ``np.nan``.
+        GeoTransform: The GeoTransformation used in the original raster.
     """
     # open the raster and band (see above)
     raster, band = open_raster(file_name, band_number=band_number)
@@ -118,23 +127,27 @@ def raster2array(file_name, band_number=1):
         # read array data from band
         band_array = band.ReadAsArray()
     except AttributeError:
-        print("ERROR: Could not read array of raster band type=%s." % str(type(band)))
+        logging.error("Could not read array of raster band type=%s." % str(type(band)))
         return raster, band, nan_value
     try:
         # overwrite NoDataValues with np.nan
         band_array = np.where(band_array == band.GetNoDataValue(), np.nan, band_array)
     except AttributeError:
-        print("ERROR: Could not get NoDataValue of raster band type=%s." % str(type(band)))
+        logging.error("Could not get NoDataValue of raster band type=%s." % str(type(band)))
         return raster, band, nan_value
     # return the array and GeoTransformation used in the original raster
     return raster, band_array, raster.GetGeoTransform()
 
 
 def clip_raster(polygon, in_raster, out_raster):
-    """
-    :param polygon: polygon filename, including directory; must end on ".shp"
-    :param in_raster: raster to be clipped, including directory.
-    :param out_raster: target raster, including directory.
-    :output: saves raster on the selected dir
+    """Clips a raster to a polygon.
+    
+    Args:
+        polygon (str): A polygon shapefile name, including directory; must end on ``".shp"``.
+        in_raster (str): Name of the raster to be clipped, including its directory.
+        out_raster (str): Name of the target raster, including its directory.
+        
+    Returns: 
+        None: Creates a new, clipped raster defined with ``out_raster``.
     """
     gdal.Warp(out_raster, in_raster, cutlineDSName=polygon)
