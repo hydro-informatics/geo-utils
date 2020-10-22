@@ -6,8 +6,6 @@
 Geospatial Utility Functions for Hydraulics and Morphodynamics
 ==============================================================
 
-Introduction
-============
 
 ``geo_utils`` provides *Python3* functions for many sorts of
 river-related analyses with geospatial data. The package is intended as
@@ -34,6 +32,9 @@ Use ``git`` to download the ``geo_utils`` repository (make sur to
 
 Usage
 =====
+
+Import
+~~~~~~~
 
 1. Run *Python* and add the download directory of ``geo-utils`` to the
    system path:
@@ -65,6 +66,7 @@ Example
    print(geo_transform)
    (6748604.7742, 3.0, 0.0, 2207317.1771, 0.0, -3.0)
 
+
 Requirements
 ============
 
@@ -76,41 +78,41 @@ Utility Documentation
 =====================
 
 Package structure
------------------
+~~~~~~~~~~~~~~~~~
 
 .. figure:: https://github.com/hydro-informatics/geo-utils/raw/master/graphs/geo-utils-uml.png
    :alt: structure
 
    structure
-   
-   
 
-Package functions, classes, and methods
-=======================================
+
+
+Scripts and functions
+======================
 
 
 ``geo_utils`` (MASTER: geo_utils.py)
-------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: geo_utils.geo_utils
    :members:
 
 ``geo_utils`` raster management (dataset_mgmt.py)
--------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: geo_utils.raster_mgmt
    :members:
 
 ``geo_utils`` shapefile management (shp_mgmt.py)
-------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: geo_utils.shp_mgmt
    :members:
 
 ``geo_utils`` projection management (srs_mgmt.py)
--------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: geo_utils.srs_mgmt
    :members:
 
 ``geo_utils`` dataset Conversion (dataset_mgmt.py)
---------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: geo_utils.dataset_mgmt
    :members:
 
@@ -119,7 +121,7 @@ DEVELOPERS (CONTRIBUTE)
 =======================
 
 How to document
----------------
+~~~~~~~~~~~~~~~~
 
 This package uses *Sphinx* `readthedocs <https://readthedocs.org/>`_ and the documentation regenerates automatically after pushing changes to the repositories ``main`` branch.
 
