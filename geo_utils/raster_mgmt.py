@@ -41,10 +41,10 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
         raster_array (ndarray): Values to rasterize.
         origin (tuple): Coordinates (x, y) of the origin.
         epsg (int): EPSG:XXXX projection to use (default: ``4326``).
-        pixel_height (int): Pixel height as multiple of the base units defined with the EPSG number (default: ``10``meters).
-        pixel_width (int): Pixel width as multiple of the base units defined with the EPSG number (default: ``10``meters).
+        pixel_height (int): Pixel height as multiple of the base units defined with the EPSG number (default: ``10`` meters).
+        pixel_width (int): Pixel width as multiple of the base units defined with the EPSG number (default: ``10`` meters).
         nan_val (``int`` or ``float``): No-data value to be used in the raster. Replaces non-numeric and ``np.nan`` in the ``ndarray``. (default: ``geoconfig.nan_value``).
-        rdtype: gdal.GDALDataType raster data type - default: gdal.GDT_Float32 (32 bit floating point)
+        rdtype: gdal.GDALDataType raster data type (default: gdal.GDT_Float32 (32 bit floating point).
         geo_info (tuple): Defines a ``gdal.DataSet.GetGeoTransform`` object  and supersedes ``origin``, ``pixel_width``, ``pixel_height`` (default: ``False``).
         
     Returns:

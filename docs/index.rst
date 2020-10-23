@@ -1,10 +1,9 @@
 .. geo_utils documentation master file.
 
-geo_utils docs
-===============
+The geo-utils docs
+==================
 
-Geospatial Utility Functions for Hydraulics and Morphodynamics
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+**Geospatial Utility Functions for Hydraulics and Morphodynamics**
 
 ``geo_utils`` provides *Python3* functions for many sorts of
 river-related analyses with geospatial data. The package is intended as
@@ -94,7 +93,7 @@ Package structure
 .. figure:: https://github.com/hydro-informatics/geo-utils/raw/master/graphs/geo-utils-uml.png
    :alt: structure
 
-   Diagram of the code structure
+   *Diagram of the code structure.*
 
 
 
