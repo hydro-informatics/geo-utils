@@ -14,6 +14,9 @@ environments, make sure to follow the *Get Started* instructions on
 `hydro-informatics.github.io`_ to get ready with *Anaconda* and
 familiarize with `git`_.
 
+.. note::
+    This documentation is also as available as style-adapted PDF (`download <https://geo-utils.readthedocs.io/_/downloads/en/latest/pdf/>`_).
+
 Installation
 ============
 
