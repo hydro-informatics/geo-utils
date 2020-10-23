@@ -78,7 +78,11 @@ Requirements
 
 -  Python 3.x (read more on `hydro-informatics.github.io`_)
 -  Dependencies:
-   ``-``\ numpy\ ``-``\ gdal\ ``(read more on [hydro-informatics.github.io](https://hydro-informatics.github.io/geo-pckg.html#gdal)     -``\ geopandas\ ``-``\ alphashape\ ``-``\ shapely\`
+   * numpy
+   * gdal (read more on `hydro-informatics.github.io/geo-pckg <https://hydro-informatics.github.io/geo-pckg.html#gdal>`_)
+   * geopandas
+   * alphashape
+   * shapely
 
 Utility Documentation
 =====================

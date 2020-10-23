@@ -1,0 +1,12 @@
+language: python
+python:
+  - 3.6
+install:
+  - sudo apt-get install pandoc
+  - pip install sphinx sphinx_rtd_theme nbsphinx IPython jupyter_client ipykernel
+  - pip install matplotlib numpy pandas imageio
+  - pip install git+https://github.com/sschwindt/sphinxcontrib-versioning.git
+  - pip install sphinxcontrib-googleanalytics
+script: sphinx-versioning build source build/html
+after_success:
+  - ./push.sh
