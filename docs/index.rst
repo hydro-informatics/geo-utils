@@ -76,19 +76,21 @@ Example
 Requirements
 ============
 
--  Python 3.x (read more on `hydro-informatics.github.io`_)
--  Dependencies:
+*  Python 3.x (read more on `hydro-informatics.github.io`_)
+*  Dependencies:
+
    * numpy
    * gdal (read more on `hydro-informatics.github.io/geo-pckg <https://hydro-informatics.github.io/geo-pckg.html#gdal>`_)
    * geopandas
    * alphashape
    * shapely
 
-Utility Documentation
-=====================
+
+Code Documentation
+==================
 
 Package structure
-~~~~~~~~~~~~~~~~~
+-----------------
 
 .. figure:: https://github.com/hydro-informatics/geo-utils/raw/master/graphs/geo-utils-uml.png
    :alt: structure
@@ -98,7 +100,7 @@ Package structure
 
 
 Scripts and functions
-======================
+---------------------
 
 
 ``geo_utils`` (MASTER: geo_utils.py)
