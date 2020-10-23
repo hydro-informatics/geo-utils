@@ -47,7 +47,7 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.githubpages',
     'sphinx.ext.todo',
-    'sphinx_rtd_theme'
+    'sphinx_thebe'
 ]
 
 templates_path = ['_templates']
@@ -65,7 +65,7 @@ intersphinx_mapping = {
     'sphinx': ('http://www.sphinx-doc.org/en/stable/', None),
 }
 
-html_theme = 'sphinx_books_theme'
+html_theme = 'sphinx_book_theme'
 html_theme_options = {
     'logo_only': True,
     'navigation_depth': 5,
