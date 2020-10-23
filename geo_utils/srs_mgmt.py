@@ -100,6 +100,9 @@ def make_prj(shp_file_name, epsg):
     Args:
         shp_file_name (str): of a shapefile name (with directory e.g., ``"C:/temp/poly.shp"``).
         epsg (int): EPSG Authority Code
+
+    Returns:
+        Creates a projection file (``.prj``) in the same directory and with the same name of ``shp_file_name``.
     """
     shp_dir = shp_file_name.strip(shp_file_name.split("/")[-1].split("\\")[-1])
     shp_name = shp_file_name.split(".shp")[0].split("/")[-1].split("\\")[-1]
@@ -116,7 +119,8 @@ def reproject(source_dataset, new_projection_dataset):
         new_projection_dataset (gdal.Dataset): Shapefile or raster with new projection info.
         
     Returns:
-        None: If the source is a raster: Creates a GeoTIFF in same directory as source with a ``"_reprojected"`` suffix in the file name.
+        * If the source is a raster, the function creates a GeoTIFF in same directory as ``source_dataset`` with a ``"_reprojected"`` suffix in the file name.
+        * If the source is a shapefile, the function creates a shapefile in same directory as ``source_dataset`` with a ``"_reprojected"`` suffix in the file name.
     """
 
     # get source and target spatial reference systems
@@ -140,6 +144,9 @@ def reproject_raster(source_dataset, source_srs, target_srs):
         source_dataset (osgeo.ogr.DataSource): Instantiates with an ``ogr.Open(SHP-FILE)``.
         source_srs (osgeo.osr.SpatialReference): Instantiates with ``get_srs(source_dataset)``
         target_srs (osgeo.osr.SpatialReference): Instantiates with ``get_srs(DATASET-WITH-TARGET-PROJECTION)``.
+
+    Returns:
+        Creates a new GeoTIFF raster in the same directory where ``source_dataset`` lives.
     """
     # READ THE SOURCE GEO TRANSFORMATION (ORIGIN_X, PIXEL_WIDTH, 0, ORIGIN_Y, 0, PIXEL_HEIGHT)
     src_geo_transform = source_dataset.GetGeoTransform()
@@ -197,6 +204,9 @@ def reproject_shapefile(source_dataset, source_layer, source_srs, target_srs):
         source_layer (osgeo.ogr.Layer ): Instantiates with ``source_dataset.GetLayer()``.
         source_srs (osgeo.osr.SpatialReference): Instantiates with ``get_srs(source_dataset)``.
         target_srs (osgeo.osr.SpatialReference): Instantiates with ``get_srs(DATASET-WITH-TARGET-PROJECTION)``.
+
+    Returns:
+        Creates a new shapefile in the same directory where ``source_dataset`` lives.
     """
     # make GeoTransformation
     coord_trans = osr.CoordinateTransformation(source_srs, target_srs)

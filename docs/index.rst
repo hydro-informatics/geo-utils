@@ -20,7 +20,7 @@ familiarize with `git`_.
 Installation
 ============
 
-Use ``git`` to download the ``geo_utils`` repository (make sur to
+Use ``git`` to download the ``geo_utils`` repository (make sure to
 `install Git Bash`_):
 
 1. Open *Git Bash* (or any other git-able *Terminal*)

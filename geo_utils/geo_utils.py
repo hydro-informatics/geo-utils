@@ -1,3 +1,5 @@
+"""``geo_utils`` is a package for creating, modifying, and transforming geo-spatial datasets.
+ A detailed documentation of ``geo_utils`` is available at `geo-utils.readthedocs.io <https://geo-utils.readthedocs.io>`_."""
 from .srs_mgmt import *
 import itertools
 gdal.UseExceptions()
@@ -44,7 +46,7 @@ def raster2line(raster_file_name, out_shp_fn, pixel_value):
         pixel_value (``int`` or ``float``): Pixel values to connect.
 
      Returns:
-         None: Writes a new shapefile to disk.
+         Writes a new shapefile to disk.
     """
 
     # calculate max. distance between points
@@ -148,7 +150,7 @@ def rasterize(in_shp_file_name, out_raster_file_name, pixel_size=10, no_data_val
         field_name (str): Name of the shapefile's field with values to burn to raster pixel values.
 
     Returns:
-        None: Creates the GeoTIFF raster defined with ``out_raster_file_name``.
+        Creates the GeoTIFF raster defined with ``out_raster_file_name``.
     """
 
     # check if any action is required
