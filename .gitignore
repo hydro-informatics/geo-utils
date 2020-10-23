@@ -1,5 +1,10 @@
 # sphinx
-
+.readthedocs.yml
+.travis
+Makefile
+push.sh
+setup.py
+old-README.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
