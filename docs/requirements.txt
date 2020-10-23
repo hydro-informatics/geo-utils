@@ -5,6 +5,7 @@ click>=7.1.2
 CommonMark>=0.9.1
 docutils>=0.16
 Flask>=1.1.2
+git+https://github.com/pandas-dev/pydata-sphinx-theme.git@master
 idna>=2.10
 imagesize>=1.2.0
 itsdangerous>=1.1.0
@@ -21,6 +22,7 @@ snowballstemmer>=2.0.0
 Sphinx>=3.2.1
 sphinxcontrib-websupport>=1.2.4
 sphinxcontrib-napoleon>=0.7
+sphinx-book-theme
 SQLAlchemy>=1.3.20
 urllib3>=1.25.11
 Werkzeug>=1.0.1
