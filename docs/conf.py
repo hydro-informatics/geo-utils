@@ -47,7 +47,6 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.githubpages',
     'sphinx.ext.todo',
-    'sphinx_thebe',
     'sphinx_rtd_theme'
 ]
 
@@ -79,15 +78,15 @@ html_theme_options = {
     'prev_next_buttons_location': 'bottom',
     'repository_url': 'https://github.com/hydro-informatics/geo-utils/',
     'repository_branch': 'master',
-    'use_edit_page_button': True,
+    'use_edit_page_button': False,
     'use_repository_button': True,
     'style_external_links': False,
     'vcs_pageview_mode': '',
-    'style_nav_header_background': 'white',
+    'style_nav_header_background': 'black',
     # Toc options
-    'collapse_navigation': True,
+    'collapse_navigation': False,
     'sticky_navigation': False,
-    'includehidden': -1,
+    'includehidden': -2,
     'titles_only': False
 }
 
@@ -103,11 +102,11 @@ if not 'READTHEDOCS' in os.environ:
     html_static_path = ['_static/']
     html_js_files = ['debug.js']
 
-    # # Add fake versions for local QA of the menu
-    # html_context['test_versions'] = list(map(
-    #     lambda x: str(x / 10),
-    #     range(1, 100)
-    # ))
+    # Add fake versions for local QA of the menu
+    html_context['test_versions'] = list(map(
+        lambda x: str(x / 10),
+        range(1, 100)
+    ))
 
 html_logo = os.path.abspath('..') + '/docs/img/icon.svg'
 html_show_sourcelink = True
