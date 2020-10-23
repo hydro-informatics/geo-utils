@@ -34,7 +34,7 @@ Use ``git`` to download the ``geo_utils`` repository (make sur to
    $ cd "D:/Target/Directory/"
    $ git clone https://github.com/hydro-informatics/geo-utils.git
 
-Now, ``geo_utils`` lives in ``"D:/Target/Directory/geo-utils/geo_utils"``
+Now, ``geo_utils`` lives in ``"D:/Target/Directory/geo-utils/geo_utils"``.
 
 Usage
 =====
@@ -54,7 +54,7 @@ Import
 
 .. code:: python
 
-   import geo_utils as gu
+   import geo_utils.geo_utils as gu
 
 Example
 ~~~~~~~
@@ -95,7 +95,7 @@ Package structure
 .. figure:: https://github.com/hydro-informatics/geo-utils/raw/master/graphs/geo-utils-uml.png
    :alt: structure
 
-   structure
+   Diagram of the code structure
 
 
 
@@ -103,33 +103,33 @@ Scripts and functions
 ---------------------
 
 
-``geo_utils`` (MASTER: geo_utils.py)
+``geo_utils`` (MASTER)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: geo_utils.geo_utils
    :members:
 
-``geo_utils`` raster management (dataset_mgmt.py)
+``raster_mgmt`` raster management
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: geo_utils.raster_mgmt
    :members:
 
-``geo_utils`` shapefile management (shp_mgmt.py)
+``shp_mgmt`` shapefile management
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: geo_utils.shp_mgmt
    :members:
 
-``geo_utils`` projection management (srs_mgmt.py)
+``srs_mgmt`` projection management
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: geo_utils.srs_mgmt
    :members:
 
-``geo_utils`` dataset Conversion (dataset_mgmt.py)
+``dataset_mgmt`` dataset conversion
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. automodule:: geo_utils.dataset_mgmt
    :members:
 
 
-DEVELOPERS (CONTRIBUTE)
+Contributing
 =======================
 
 How to document
