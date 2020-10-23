@@ -1,11 +1,10 @@
-.. geo_utils documentation master file, created by
-   sphinx-quickstart on Thu Oct 22 14:55:41 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root ``toctree`` directive.
+.. geo_utils documentation master file.
+
+About GEO_UTILS
+===============
 
 Geospatial Utility Functions for Hydraulics and Morphodynamics
-==============================================================
-
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ``geo_utils`` provides *Python3* functions for many sorts of
 river-related analyses with geospatial data. The package is intended as

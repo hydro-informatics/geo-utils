@@ -12,7 +12,7 @@ def coords2offset(geo_transform, x_coord, y_coord):
         y_coord (float): y-coordinate
 
     Returns:
-        tuple: Number of pixels ``(offset_x, offset_y)``,  both ``int``s.
+        tuple: Number of pixels ``(offset_x, offset_y)``,  both ``int`` .
     """
     try:
         origin_x = geo_transform[0]
@@ -58,7 +58,7 @@ def offset2coords(geo_transform, offset_x, offset_y):
         offset_y (int): y number of pixels.
         
     Returns:
-        tuple: ``float``s of x-y-coordinates ``(x_coord, y_coord)``.
+        tuple: Two ``float`` numbers of x-y-coordinates ``(x_coord, y_coord)``.
     """
     try:
         origin_x = geo_transform[0]
