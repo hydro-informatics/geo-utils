@@ -26,9 +26,15 @@ Use ``git`` to download the ``geo_utils`` repository (make sur to
 2. Create or select a target directory for ``geo_utils`` (e.g., in your
    *Python* project folder)
 3. Type ``cd "D:/Target/Directory/"`` to change to the target
-   installation directory
-4. Clone the repository:
-   ``git clone https://github.com/hydro-informatics/geo-utils.git``
+   installation directory.
+4. Clone the repository.
+
+.. code:: console
+
+   $ cd "D:/Target/Directory/"
+   $ git clone https://github.com/hydro-informatics/geo-utils.git
+
+Now, ``geo_utils`` lives in ``"D:/Target/Directory/geo-utils/geo_utils"``
 
 Usage
 =====

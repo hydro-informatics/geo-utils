@@ -31,7 +31,7 @@ autodoc_mock_imports = ['alphashape', 'numpy', 'gdal', 'laspy', 'geopandas', 'ra
 import sphinx_rtd_theme
 from sphinx.locale import _
 
-project = u'geo utils'
+project = u'geo-utils'
 slug = re.sub(r'\W+', '-', project.lower())
 version = '0.0.2'
 release = '0.0.2'
@@ -56,20 +56,28 @@ gettext_compact = False
 
 master_doc = 'index'
 suppress_warnings = ['image.nonlocal_uri']
-pygments_style = 'default'
+pygments_style = 'sphinx'
 
 intersphinx_mapping = {
     'rtd': ('https://docs.readthedocs.io/en/latest/', None),
     'sphinx': ('http://www.sphinx-doc.org/en/stable/', None),
 }
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'sphinx_book_theme'
 html_theme_options = {
     'logo_only': True,
     'navigation_depth': 5,
     'canonical_url': '',
     'display_version': True,
+    "launch_buttons": {
+                        "binderhub_url": "https://mybinder.org",
+                        "thebe": True,
+                        "collapse_navigation": False},
     'prev_next_buttons_location': 'bottom',
+    'repository_url': "https://github.com/hydro-informatics/geo-utils/",
+    "repository_branch": "master",
+    "use_edit_page_button": True,
+    "use_repository_button": True,
     'style_external_links': False,
     'vcs_pageview_mode': '',
     'style_nav_header_background': 'white',
@@ -81,22 +89,26 @@ html_theme_options = {
 }
 
 html_context = {
-    'date': datetime.date.today().strftime('%Y-%m-%d')
+    'date': datetime.date.today().strftime('%Y-%m-%d'),
+    'display_github': True,
+    'github_user': 'hydro-informatics',
+    'github_repo': 'geo-utils',
+    'github_version': 'master/',
 }
 
 if not 'READTHEDOCS' in os.environ:
     html_static_path = ['_static/']
     html_js_files = ['debug.js']
 
-    # Add fake versions for local QA of the menu
-    html_context['test_versions'] = list(map(
-        lambda x: str(x / 10),
-        range(1, 100)
-    ))
+    # # Add fake versions for local QA of the menu
+    # html_context['test_versions'] = list(map(
+    #     lambda x: str(x / 10),
+    #     range(1, 100)
+    # ))
 
 html_logo = os.path.abspath('..') + '/docs/img/icon.svg'
 html_show_sourcelink = True
-htmlhelp_basename = slug
+htmlhelp_basename = 'Geo-Utils'
 
 
 latex_documents = [
