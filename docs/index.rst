@@ -1,6 +1,6 @@
 .. geo_utils documentation master file.
 
-About GEO_UTILS
+geo_utils docs
 ===============
 
 Geospatial Utility Functions for Hydraulics and Morphodynamics
