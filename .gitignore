@@ -1,10 +1,5 @@
 # sphinx
-.readthedocs.yml
-.travis
-Makefile
-make.bat
-push.sh
-setup.py
+
 old-README.md
 
 # Byte-compiled / optimized / DLL files

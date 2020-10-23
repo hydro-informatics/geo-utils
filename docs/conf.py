@@ -65,7 +65,7 @@ intersphinx_mapping = {
     'sphinx': ('http://www.sphinx-doc.org/en/stable/', None),
 }
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = 'sphinx_books_theme'
 html_theme_options = {
     'logo_only': True,
     'navigation_depth': 5,
@@ -73,7 +73,6 @@ html_theme_options = {
     'display_version': True,
     'launch_buttons': {
                         'binderhub_url': 'https://mybinder.org',
-                        'thebe': True,
                         'collapse_navigation': False},
     'prev_next_buttons_location': 'bottom',
     'repository_url': 'https://github.com/hydro-informatics/geo-utils/',
@@ -82,11 +81,11 @@ html_theme_options = {
     'use_repository_button': True,
     'style_external_links': False,
     'vcs_pageview_mode': '',
-    'style_nav_header_background': 'black',
+    'style_nav_header_background': 'dark',
     # Toc options
     'collapse_navigation': False,
     'sticky_navigation': False,
-    'includehidden': -2,
+    'includehidden': -1,
     'titles_only': False
 }
 
