@@ -32,7 +32,7 @@ def open_raster(file_name, band_number=1):
     return raster, raster_band
 
 
-def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=10, pixel_height=10,
+def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=10., pixel_height=10.,
                   nan_val=nan_value, rdtype=gdal.GDT_Float32, geo_info=False):
     """Converts an ``ndarray`` (``numpy.array``) to a GeoTIFF raster.
     
@@ -41,10 +41,10 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
         raster_array (ndarray): Values to rasterize.
         origin (tuple): Coordinates (x, y) of the origin.
         epsg (int): EPSG:XXXX projection to use (default: ``4326``).
-        pixel_height (int): Pixel height as multiple of the base units defined with the EPSG number (default: ``10`` meters).
-        pixel_width (int): Pixel width as multiple of the base units defined with the EPSG number (default: ``10`` meters).
+        pixel_height (float OR int): Pixel height as multiple of the base units defined with the EPSG number (default: ``10`` meters).
+        pixel_width (float OR int): Pixel width as multiple of the base units defined with the EPSG number (default: ``10`` meters).
         nan_val (``int`` or ``float``): No-data value to be used in the raster. Replaces non-numeric and ``np.nan`` in the ``ndarray``. (default: ``geoconfig.nan_value``).
-        rdtype: gdal.GDALDataType raster data type (default: gdal.GDT_Float32 (32 bit floating point).
+        rdtype: `gdal.GDALDataType <https://gdal.org/doxygen/gdal_8h.html#a22e22ce0a55036a96f652765793fb7a4>`_ raster data type (default: gdal.GDT_Float32 (32 bit floating point).
         geo_info (tuple): Defines a ``gdal.DataSet.GetGeoTransform`` object  and supersedes ``origin``, ``pixel_width``, ``pixel_height`` (default: ``False``).
         
     Returns:
@@ -138,6 +138,23 @@ def raster2array(file_name, band_number=1):
     # return the array and GeoTransformation used in the original raster
     return raster, band_array, raster.GetGeoTransform()
 
+
+def remove_tif(file_name):
+    """Removes a GeoTIFF and its dependent files (e.g., xml).
+
+    Args:
+        file_name (str): Directory (path) and name of a GeoTIFF
+
+    Returns:
+        Removes the provided ``file_name`` and all dependencies.
+    """
+    for file in glob.glob("%s*" % file_name.split(".tif")[0]):
+        try:
+            os.remove(file)
+        except PermissionError:
+            print("WARNING: Could not remove %s (locked by other program)." % file)
+        except FileNotFoundError:
+            print("WARNING: The file %s does not exist." % file)
 
 def clip_raster(polygon, in_raster, out_raster):
     """Clips a raster to a polygon.
