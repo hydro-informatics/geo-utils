@@ -160,11 +160,10 @@ def rasterize(in_shp_file_name, out_raster_file_name, pixel_size=10, no_data_val
         max_points (int): Maximum number of points to use for interpolation. The interpolator will not use more than ``max_points`` closest points to interpolate a pixel value (default: ``0``).
 
     Hints:
-        More information on pixel value interpolation:
-        * ``interpolate_gap_pixels=True`` interpolates values at pixels that are not touched by any las point.
-        * The pixel value interpolation uses ``gdal_grid`` (i.e., its Python bindings through ``gdal.Grid()``).
-        * Control the interpolation parameters with the keyword arguments ``radius1``, ``radius2``, ``power``, ``max_points``, ``min_points``,  and ``smoothing``..
-        * Get more information on `gdal.org <https://gdal.org/programs/gdal_grid.html#interpolation-algorithms>`_.
+        ``interpolate_gap_pixels=True`` interpolates values at pixels that are not touched by any las point.
+        The pixel value interpolation uses ``gdal_grid`` (i.e., its Python bindings through ``gdal.Grid()``).
+        Control the interpolation parameters with the keyword arguments ``radius1``, ``radius2``, ``power``, ``max_points``, ``min_points``,  and ``smoothing``.
+        Get more information on `gdal.org <https://gdal.org/programs/gdal_grid.html#interpolation-algorithms>`_.
 
     Returns:
         int: Creates the GeoTIFF raster defined with ``out_raster_file_name`` (success: ``0``, otherwise ``None``).
