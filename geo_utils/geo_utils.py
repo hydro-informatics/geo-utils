@@ -59,7 +59,7 @@ def raster2line(raster_file_name, out_shp_fn, pixel_value):
 
     # extract pixels with the user-defined pixel value from the raster array
     trajectory = np.where(array == pixel_value)
-    if np.count_nonzero(trajectory) is 0:
+    if np.count_nonzero(trajectory) == 0:
         logging.error("! The defined pixel_value (%s) does not occur in the raster band." % str(pixel_value))
         return None
 
@@ -159,11 +159,12 @@ def rasterize(in_shp_file_name, out_raster_file_name, pixel_size=10, no_data_val
         min_points (int): Minimum number of points to use for interpolation. If the interpolator cannot find at least ``min_points`` for a pixel, it assigns a ``no_data`` value to that pixel  (default: ``0``).
         max_points (int): Maximum number of points to use for interpolation. The interpolator will not use more than ``max_points`` closest points to interpolate a pixel value (default: ``0``).
 
+
     Hints:
-        ``interpolate_gap_pixels=True`` interpolates values at pixels that are not touched by any las point.
-        The pixel value interpolation uses ``gdal_grid`` (i.e., its Python bindings through ``gdal.Grid()``).
-        Control the interpolation parameters with the keyword arguments ``radius1``, ``radius2``, ``power``, ``max_points``, ``min_points``,  and ``smoothing``.
-        Get more information on `gdal.org <https://gdal.org/programs/gdal_grid.html#interpolation-algorithms>`_.
+        More information on pixel value interpolation:
+        * ``interpolate_gap_pixels=True`` interpolates values at pixels that are not touched by any las point.
+        * The pixel value interpolation uses ``gdal_grid`` (i.e., its Python bindings through ``gdal.Grid()``).
+        * Control the interpolation parameters with the keyword arguments ``radius1``, ``radius2``, ``power``, ``max_points``, ``min_points``,  and ``smoothing``..
 
     Returns:
         int: Creates the GeoTIFF raster defined with ``out_raster_file_name`` (success: ``0``, otherwise ``None``).
@@ -217,12 +218,12 @@ def rasterize(in_shp_file_name, out_raster_file_name, pixel_size=10, no_data_val
         logging.info(" * Creating gridded raster with interpolated values for empty pixels from neighbouring pixels ...")
         logging.info("   -- Note: to deactivate pixel value interpolation option use interpolate_gap_pixels=False")
 
-        algorithm = "invdist:power={0}:radius1={1}:radius2={2}:smoothing={3}:min_points={4}:max_points={5}".format(
+        try:
+            algorithm = "invdist:power={0}:radius1={1}:radius2={2}:smoothing={3}:min_points={4}:max_points={5}".format(
                 str(default_keys["power"]), str(default_keys["radius1"]), str(default_keys["radius2"]),
                 str(default_keys["smoothing"]), str(default_keys["min_points"]), str(default_keys["max_points"])
             )
 
-        try:
             gdal.Grid(out_raster_file_name, in_shp_file_name,
                       algorithm=algorithm,
                       zfield=kwargs.get("field_name"),
@@ -232,6 +233,10 @@ def rasterize(in_shp_file_name, out_raster_file_name, pixel_size=10, no_data_val
                       height=y_res,
                       outputBounds=[x_min, y_min, x_max, y_max])
             return 0
+
+        except KeyError:
+            logging.error("! Invalid gdal.Grid options provided.")
+            return None
         except RuntimeError as err:
             logging.error("! %s." % str(err))
 

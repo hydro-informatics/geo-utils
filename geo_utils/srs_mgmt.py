@@ -55,7 +55,7 @@ def get_srs(dataset):
     # auto-detect epsg
     try:
         auto_detect = sr.AutoIdentifyEPSG()
-        if auto_detect is not 0:
+        if auto_detect != 0:
             sr = sr.FindMatches()[0][0]  # Find matches returns list of tuple of SpatialReferences
             sr.AutoIdentifyEPSG()
     except TypeError:
@@ -130,10 +130,10 @@ def reproject(source_dataset, new_projection_dataset):
     # get dictionary of layer type and layer (or band=layer)
     layer_dict = get_layer(source_dataset)
 
-    if layer_dict["type"] is "raster":
+    if layer_dict["type"] == "raster":
         reproject_raster(source_dataset, srs_src, srs_tar)
 
-    if layer_dict["type"] is "vector":
+    if layer_dict["type"] == "vector":
         reproject_shapefile(source_dataset, layer_dict["layer"], srs_src, srs_tar)
 
 
