@@ -1,9 +1,10 @@
 numpy
 matplotlib
-imageio
 pandas
-jupyter-offlinenotebook
 shapely
 gdal
 geopandas
 alphashape
+pyshp
+fiona
+geojson

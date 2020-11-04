@@ -1,5 +1,4 @@
 from .dataset_mgmt import *
-import urllib
 
 
 def get_esriwkt(epsg):

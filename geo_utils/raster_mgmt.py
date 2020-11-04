@@ -1,5 +1,3 @@
-import gdal
-import osr
 from .geoconfig import *
 
 
@@ -155,6 +153,7 @@ def remove_tif(file_name):
             print("WARNING: Could not remove %s (locked by other program)." % file)
         except FileNotFoundError:
             print("WARNING: The file %s does not exist." % file)
+
 
 def clip_raster(polygon, in_raster, out_raster):
     """Clips a raster to a polygon.

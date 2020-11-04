@@ -1,11 +1,4 @@
-try:
-    from gdal import ogr
-    import geopandas
-    import numpy as np
-    import os
-    import alphashape
-except ModuleNotFoundError as e:
-    logging.error(e)
+from .geoconfig import *
 
 
 def create_shp(shp_file_dir, overwrite=True, *args, **kwargs):

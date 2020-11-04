@@ -80,11 +80,15 @@ Requirements
 *  Python 3.x (read more on `hydro-informatics.github.io`_)
 *  Dependencies:
 
-   * numpy
-   * gdal (read more on `hydro-informatics.github.io/geo-pckg <https://hydro-informatics.github.io/geo-pckg.html#gdal>`_)
-   * geopandas
-   * alphashape
-   * shapely
+    * alphashape
+    * fiona
+    * gdal (read more on `hydro-informatics.github.io/geo-pckg <https://hydro-informatics.github.io/geo-pckg.html#gdal>`_)
+    * geojson
+    * geopandas
+    * numpy
+    * pandas
+    * pyshp
+    * shapely
 
 
 Code Documentation
@@ -129,6 +133,14 @@ Scripts and functions
 .. automodule:: geo_utils.dataset_mgmt
    :members:
 
+KML/KML file management
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: geo_utils.kml
+   :members:
+
+.. automodule:: geo_utils.kmx_parser
+   :members:
 
 Contributing
 =======================
