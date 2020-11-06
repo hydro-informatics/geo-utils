@@ -31,7 +31,7 @@ def open_raster(file_name, band_number=1):
 
 
 def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=10., pixel_height=10.,
-                  nan_val=nan_value, rdtype=gdal.GDT_Float32, geo_info=False):
+                  nan_val=nan_value, rdtype=gdal.GDT_Float32, geo_info=False, options=["PROFILE=GeoTIFF"]):
     """Converts an ``ndarray`` (``numpy.array``) to a GeoTIFF raster.
     
     Args:
@@ -44,7 +44,8 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
         nan_val (``int`` or ``float``): No-data value to be used in the raster. Replaces non-numeric and ``np.nan`` in the ``ndarray``. (default: ``geoconfig.nan_value``).
         rdtype: `gdal.GDALDataType <https://gdal.org/doxygen/gdal_8h.html#a22e22ce0a55036a96f652765793fb7a4>`_ raster data type (default: gdal.GDT_Float32 (32 bit floating point).
         geo_info (tuple): Defines a ``gdal.DataSet.GetGeoTransform`` object  and supersedes ``origin``, ``pixel_width``, ``pixel_height`` (default: ``False``).
-        
+        options (list): Raster creation options - default is ['PROFILE=GeoTIFF']. Add 'PHOTOMETRIC=RGB' to create an RGB image raster.
+
     Returns:
         int: ``0`` if successful, otherwise ``-1``.
     """
@@ -61,7 +62,7 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
         return -1
 
     try:
-        new_raster = driver.Create(file_name, cols, rows, 1, eType=rdtype)
+        new_raster = driver.Create(file_name, cols, rows, 1, eType=rdtype, options=options)
     except RuntimeError as e:
         logging.error("Could not create %s." % str(file_name))
         return -1

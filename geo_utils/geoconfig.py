@@ -1,4 +1,4 @@
-"""Basic imports for geo_utils"""
+"""Basic imports and functions for geo_utils"""
 try:
     import logging
     import glob
@@ -6,6 +6,7 @@ try:
     import urllib
     import subprocess
     import itertools
+    import shutil
 except ImportError as e:
     raise ImportError("Could not import standard libraries:\n{0}".format(e))
 
@@ -56,7 +57,8 @@ try:
 except ImportError as e:
     raise ImportError("Could not import fiona (is it installed?). {0}".format(e))
 
-
+# Global variables
+cache_folder = os.path.abspath("") + "/__cache__/"
 nan_value = -9999.0
 
 gdal_dtype_dict = {
@@ -73,3 +75,44 @@ gdal_dtype_dict = {
     10: "gdal.GDT_CFloat32",
     11: "gdal.GDT_CFloat64",
 }
+
+
+def cache(fun):
+    """Makes a function running in a temoprary ``__cache__`` sub-folder to enable deleting temporary trash files."""
+    def wrapper(*args, **kwargs):
+        check_cache()
+        fun(*args, **kwargs)
+        remove_directory(cache_folder)
+    wrapper.__doc__ = fun.__doc__
+    return wrapper
+
+
+def check_cache():
+    """Creates the cache folder if it does not exist."""
+    try:
+        os.makedirs(cache_folder)
+    except OSError:
+        pass
+
+def remove_directory(directory):
+    """Removes a directory and all its contents - be careful!
+
+    Args:
+        directory (str): directory to remove (delete)
+
+    Returns:
+        None: Deletes directory.
+    """
+    try:
+        for root, dirs, files in os.walk(directory):
+            for f in files:
+                os.unlink(os.path.join(root, f))
+            for d in dirs:
+                shutil.rmtree(os.path.join(root, d))
+        shutil.rmtree(directory)
+    except PermissionError:
+        print("WARNING: Could not remove %s (files locked by other program)." % directory)
+    except FileNotFoundError:
+        print("WARNING: The directory %s does not exist." % directory)
+    except NotADirectoryError:
+        print("WARNING: %s is not a directory." % directory)

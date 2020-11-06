@@ -142,6 +142,13 @@ KML/KML file management
 .. automodule:: geo_utils.kmx_parser
    :members:
 
+Examples
+========
+
+.. automodule:: example_project_tifs
+   :members:
+
+
 Contributing
 =======================
 
