@@ -1,6 +1,9 @@
 # sphinx
-
 old-README.md
+
+# test results and data folders
+data/
+output/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -52,16 +52,19 @@ def project_tiffs(kml_dir, src_tiff_dir, epsg_tar, epsg_src=4326, tiff_prefix=""
         src_ras, green_array, none_ref = raster2array(tiff_name, band_number=3)
         # release source raster
         src_ras = None
-        # stack RGB array
-        rgb = np.dstack((red_array, green_array, blue_array))
+        # stack RGB array 
+        # rgb = np.dstack((red_array, green_array, blue_array))
+        rgb = [red_array, blue_array, green_array]
 
         print("   - creating new projected raster ... ")
         create_raster(file_name=tar_tiff_dir + tiff_suffix + "%0004i" % img_no + "_georef.tif",
                       raster_array=rgb,
                       epsg=epsg_tar,
                       origin=(x, y),
-                      pixel_width=1,
-                      pixel_height=1,
+                      nan_val=0,
+                      pixel_width=0.1,
+                      pixel_height=0.1,
+                      rdtype=gdal.GDT_UInt16,
                       options=["PHOTOMETRIC=RGB", "PROFILE=GeoTIFF"])
         break
         # print("   - projecting raster on reference raster ... ")

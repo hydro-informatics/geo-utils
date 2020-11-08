@@ -30,13 +30,14 @@ def open_raster(file_name, band_number=1):
     return raster, raster_band
 
 
-def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=10., pixel_height=10.,
+def create_raster(file_name, raster_array, bands=1, origin=None, epsg=4326, pixel_width=10., pixel_height=10.,
                   nan_val=nan_value, rdtype=gdal.GDT_Float32, geo_info=False, options=["PROFILE=GeoTIFF"]):
     """Converts an ``ndarray`` (``numpy.array``) to a GeoTIFF raster.
     
     Args:
         file_name (str): Target file name, including directory; must end on ``".tif"``.
-        raster_array (ndarray): Values to rasterize.
+        raster_array (``ndarray`` or ``list``): Array or list of arrays of values to rasterize. If a list of arrays is provided, the length of the list will correspond to the number of bands added to the raster (supersedes ``bands``).
+        bands (int): Number of bands to write to the raster (default: ``1``).
         origin (tuple): Coordinates (x, y) of the origin.
         epsg (int): EPSG:XXXX projection to use (default: ``4326``).
         pixel_height (float OR int): Pixel height as multiple of the base units defined with the EPSG number (default: ``10`` meters).
@@ -55,19 +56,24 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
 
     # create raster dataset with number of cols and rows of the input array
     try:
-        cols = raster_array.shape[1]
-        rows = raster_array.shape[0]
+        # overwrite number of bands if multiple arrays are provided in a list
+        if type(raster_array) is list:
+            bands = raster_array.__len__()
+            cols = raster_array[0].shape[1]
+            rows = raster_array[0].shape[0]
+        else:
+            cols = raster_array.shape[1]
+            rows = raster_array.shape[0]
     except TypeError:
         logging.error("Provided array is not a numpy.ndarray.")
         return -1
 
     try:
-        new_raster = driver.Create(file_name, cols, rows, 1, eType=rdtype, options=options)
+        logging.info(" * creating new raster with %1i bands ..." % bands)
+        new_raster = driver.Create(file_name, cols, rows, bands, eType=rdtype, options=options)
     except RuntimeError as e:
         logging.error("Could not create %s." % str(file_name))
         return -1
-    # replace np.nan values
-    raster_array[np.isnan(raster_array)] = nan_val
 
     # apply geo-origin and pixel dimensions
     if not geo_info:
@@ -89,11 +95,21 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
             logging.error(e)
             return -1
 
-    # retrieve band number 1
-    band = new_raster.GetRasterBand(1)
-    band.SetNoDataValue(nan_val)
-    band.WriteArray(raster_array)
-    band.SetScale(1.0)
+    # write array contents to band(s)
+    for b in range(bands):
+        if type(raster_array) is list:
+            # use array item of list if multiple arrays provided
+            write_array = raster_array[b]
+        else:
+            write_array = raster_array
+        # replace np.nan values
+        write_array[np.isnan(write_array)] = nan_val
+        band = new_raster.GetRasterBand(b + 1)
+        band.SetNoDataValue(nan_val)
+        band.WriteArray(write_array)
+        band.SetScale(1.0)
+        # release band
+        band.FlushCache()
 
     # create projection and assign to raster
     srs = osr.SpatialReference()
@@ -103,9 +119,8 @@ def create_raster(file_name, raster_array, origin=None, epsg=4326, pixel_width=1
         logging.error(e)
         return -1
     new_raster.SetProjection(srs.ExportToWkt())
+    logging.info(" * successfully created %s" % file_name)
 
-    # release raster band
-    band.FlushCache()
     return 0
 
 
