@@ -35,6 +35,7 @@ def project_tiffs(kml_dir, src_tiff_dir, epsg_tar, epsg_src=4326, tiff_prefix=""
     tar_crs = pyproj.CRS("EPSG:%s" % str(epsg_tar))
     transformer = pyproj.Transformer.from_crs(kml_crs, tar_crs)
 
+    # retrieve prefix name of tiff files
     tiff_prefix_dir = "{0}{1}".format(src_tiff_dir, tiff_prefix)
 
     for i in range(gdf_kml["coordinates"].__len__()):
@@ -43,7 +44,7 @@ def project_tiffs(kml_dir, src_tiff_dir, epsg_tar, epsg_src=4326, tiff_prefix=""
         print(" * identified raster name %s ..." % tiff_name)
 
         print("   - retrieving origin coordinates from kml")
-        lat, long, alt = (float(coord) for coord in gdf_kml["coordinates"][i].split(","))
+        long, lat, alt = (float(coord) for coord in gdf_kml["coordinates"][i].split(","))
         x, y = transformer.transform(lat, long)
 
         print("   - opening R, G, and B arrays of the source raster ... ")
@@ -52,12 +53,11 @@ def project_tiffs(kml_dir, src_tiff_dir, epsg_tar, epsg_src=4326, tiff_prefix=""
         src_ras, green_array, none_ref = raster2array(tiff_name, band_number=3)
         # release source raster
         src_ras = None
-        # stack RGB array 
-        # rgb = np.dstack((red_array, green_array, blue_array))
+        # summarize RGB array in  list
         rgb = [red_array, blue_array, green_array]
 
         print("   - creating new projected raster ... ")
-        create_raster(file_name=tar_tiff_dir + tiff_suffix + "%0004i" % img_no + "_georef.tif",
+        create_raster(file_name=tar_tiff_dir + tiff_prefix + "%0004i" % img_no + "_georef.tif",
                       raster_array=rgb,
                       epsg=epsg_tar,
                       origin=(x, y),
@@ -65,6 +65,8 @@ def project_tiffs(kml_dir, src_tiff_dir, epsg_tar, epsg_src=4326, tiff_prefix=""
                       pixel_width=0.1,
                       pixel_height=0.1,
                       rdtype=gdal.GDT_UInt16,
+                      rotation_angle=200.,
+                      shear_pixels=False,
                       options=["PHOTOMETRIC=RGB", "PROFILE=GeoTIFF"])
         break
         # print("   - projecting raster on reference raster ... ")

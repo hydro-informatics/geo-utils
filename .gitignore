@@ -4,6 +4,7 @@ old-README.md
 # test results and data folders
 data/
 output/
+inn/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

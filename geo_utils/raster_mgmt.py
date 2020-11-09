@@ -31,7 +31,8 @@ def open_raster(file_name, band_number=1):
 
 
 def create_raster(file_name, raster_array, bands=1, origin=None, epsg=4326, pixel_width=10., pixel_height=10.,
-                  nan_val=nan_value, rdtype=gdal.GDT_Float32, geo_info=False, options=["PROFILE=GeoTIFF"]):
+                  nan_val=nan_value, rdtype=gdal.GDT_Float32, geo_info=False, rotation_angle=None, shear_pixels=True,
+                  options=["PROFILE=GeoTIFF"]):
     """Converts an ``ndarray`` (``numpy.array``) to a GeoTIFF raster.
     
     Args:
@@ -45,10 +46,15 @@ def create_raster(file_name, raster_array, bands=1, origin=None, epsg=4326, pixe
         nan_val (``int`` or ``float``): No-data value to be used in the raster. Replaces non-numeric and ``np.nan`` in the ``ndarray``. (default: ``geoconfig.nan_value``).
         rdtype: `gdal.GDALDataType <https://gdal.org/doxygen/gdal_8h.html#a22e22ce0a55036a96f652765793fb7a4>`_ raster data type (default: gdal.GDT_Float32 (32 bit floating point).
         geo_info (tuple): Defines a ``gdal.DataSet.GetGeoTransform`` object  and supersedes ``origin``, ``pixel_width``, ``pixel_height`` (default: ``False``).
+        rotation_angle (float): Rotate (in degrees) not North-up rasters. The default value (``0``) corresponds to north-up (only modify if you know what you are doing).
+        shear_pixels (bool): Use with ``rotation_angle`` to shear pixels as well (default: ``True``).
         options (list): Raster creation options - default is ['PROFILE=GeoTIFF']. Add 'PHOTOMETRIC=RGB' to create an RGB image raster.
 
     Returns:
         int: ``0`` if successful, otherwise ``-1``.
+
+    Hint:
+        For processing airborne imagery, the ``roation_angle`` corresponds to the bearing angle of the aircraft with reference to true, not magnetic North.
     """
     gdal.UseExceptions()
     # check out driver
@@ -83,8 +89,24 @@ def create_raster(file_name, raster_array, bands=1, origin=None, epsg=4326, pixe
         except IndexError:
             logging.error("Wrong origin format (required: (INT, INT) - provided: %s)." % str(origin))
             return -1
+        if rotation_angle:
+            try:
+                logging.info(" * rotating image by %0.2f deg" % float(rotation_angle))
+            except ValueError:
+                logging.error("The provided rotation angle is not a number. Re-try with a numeric rotation angle (in degrees).")
+                return -1
+            rotation_angle = np.deg2rad(rotation_angle)
+            x_rotation = -1 * pixel_width * np.sin(rotation_angle)
+            y_rotation = -pixel_height * np.cos(rotation_angle)
+            if shear_pixels:
+                pixel_width = pixel_width * np.cos(rotation_angle)
+                pixel_height = pixel_height * np.sin(rotation_angle)
+        else:
+            x_rotation = 0.
+            y_rotation = 0.
+
         try:
-            new_raster.SetGeoTransform((origin_x, pixel_width, 0, origin_y, 0, -pixel_height))
+            new_raster.SetGeoTransform((origin_x, pixel_width, x_rotation, origin_y, y_rotation, -pixel_height))
         except RuntimeError as e:
             logging.error("Invalid origin (must be INT) or pixel_height/pixel_width (must be INT) provided.")
             return -1
@@ -104,7 +126,7 @@ def create_raster(file_name, raster_array, bands=1, origin=None, epsg=4326, pixe
             write_array = raster_array
         # replace np.nan values
         write_array[np.isnan(write_array)] = nan_val
-        band = new_raster.GetRasterBand(b + 1)
+        band = new_raster.GetRasterBand(b+1)
         band.SetNoDataValue(nan_val)
         band.WriteArray(write_array)
         band.SetScale(1.0)
