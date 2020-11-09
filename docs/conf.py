@@ -23,10 +23,11 @@ def is_development_build():
 
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.append(os.path.abspath('..') + '/geo_utils')
+sys.path.append(os.path.abspath('..') + '/example_applications')
 
 # the following modules will be mocked (i.e. bogus imports - required for C-dependent packages)
 autodoc_mock_imports = ['alphashape', 'numpy', 'gdal', 'laspy', 'geopandas', 'rasterstats', 'scikit-image',
-                        'osr', 'pandas', 'shapely', 'fiona']
+                        'osr', 'pandas', 'pyshp', 'shapely', 'fiona', 'shapefile', 'pyproj']
 
 import sphinx_rtd_theme
 from sphinx.locale import _
