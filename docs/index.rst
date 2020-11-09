@@ -145,7 +145,7 @@ KML/KML file management
 Examples
 ========
 
-.. automodule:: example_project_tifs
+.. automodule:: example_applications/georeference_tifs
    :members:
 
 
