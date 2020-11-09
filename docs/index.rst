@@ -97,10 +97,12 @@ Code Documentation
 Package structure
 -----------------
 
+The following diagram highlights function locations in *Python* scripts and how those are linked to each other.
+
 .. figure:: https://github.com/hydro-informatics/geo-utils/raw/master/graphs/geo-utils-uml.png
    :alt: structure
 
-   *Diagram of the code structure.*
+   *Diagram of the code structure (needs to be updated).*
 
 
 
