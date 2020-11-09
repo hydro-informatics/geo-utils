@@ -2,6 +2,11 @@
 The TIF files in this example have a prefix and suffix name, which are separated by a 4-digits number.
 The origin of the new GeoTIFF files is derived from a KML file.
 """
+# append geo_utils script directory to interpreter path
+import os, sys
+sys.path.append(os.path.abspath(".."))
+
+# import geo_utils - and this script also requires pyproj (install with pyshp)
 from geo_utils.geo_utils import *
 import pyproj
 
@@ -65,27 +70,24 @@ def project_tiffs(kml_dir, src_tiff_dir, epsg_tar, epsg_src=4326, tiff_prefix=""
                       pixel_width=0.1,
                       pixel_height=0.1,
                       rdtype=gdal.GDT_UInt16,
-                      rotation_angle=200.,
+                      rotation_angle=178.,
                       shear_pixels=False,
                       options=["PHOTOMETRIC=RGB", "PROFILE=GeoTIFF"])
-        break
-        # print("   - projecting raster on reference raster ... ")
 
 
 if __name__ == "__main__":
     # get source file names as list
-    src_tiff_dir = "/media/sf_shared/luftbilder_20201030/Inn_20200117_RGB_tiff/"
-    # files = glob.glob("%s*.tif" % src_tiff_dir)
-    src_tiff_prefix = "13300"
-    src_tiff_suffix = "_0000_00_0000_0001.tif"
+    src_tiff_dir = "/dir/to/tifs/"
+    src_tiff_prefix = "tif_prefix"
+    src_tiff_suffix = "tif_suffix.tif"
     tar_tiff_dir = os.path.abspath("") + "/output/"
 
-    # read image anchors (origins) from kml file
-    src_kml = "/media/sf_shared/luftbilder_20201030/Traj_1_InnWWARo_17012020_RGBevents_UniStuttgart.kml"
+    # read image anchors (origins) from kml file (always has source epsg=4326 - google maps uses 3857)
+    src_kml = "/dir/to/and/of/a/google-earth-file.kml"
 
     project_tiffs(kml_dir=src_kml, src_tiff_dir=src_tiff_dir,
                   tar_tiff_dir=tar_tiff_dir,
                   tiff_prefix=src_tiff_prefix,
                   tiff_suffix=src_tiff_suffix,
                   epsg_src=4326,
-                  epsg_tar=25832)
+                  epsg_tar=3857)
