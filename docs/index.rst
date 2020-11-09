@@ -57,6 +57,7 @@ Import
 
    import geo_utils.geo_utils as gu
 
+
 Example
 ~~~~~~~
 
@@ -91,11 +92,9 @@ Requirements
     * shapely
 
 
-Code Documentation
+Code structure
 ==================
 
-Package structure
------------------
 
 The following diagram highlights function locations in *Python* scripts and how those are linked to each other.
 
@@ -106,8 +105,8 @@ The following diagram highlights function locations in *Python* scripts and how 
 
 
 
-Scripts and functions
----------------------
+Script and function docs
+========================
 
 
 ``geo_utils`` (MASTER)
