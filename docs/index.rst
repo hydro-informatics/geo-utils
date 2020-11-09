@@ -32,8 +32,8 @@ Use ``git`` to download the ``geo_utils`` repository (make sure to
 
 .. code:: console
 
-   $ cd "D:/Target/Directory/"
-   $ git clone https://github.com/hydro-informatics/geo-utils.git
+    cd "D:/Target/Directory/"
+    git clone https://github.com/hydro-informatics/geo-utils.git
 
 Now, ``geo_utils`` lives in ``"D:/Target/Directory/geo-utils/geo_utils"``.
 
@@ -48,14 +48,14 @@ Import
 
 .. code:: python
 
-   import os, sys
-   sys.path.append("D:/Target/Directory/geo-utils/")  # Of course: replace "D:/Target/Directory/", e.g., with  r'' + os.path.abspath('')
+    import os, sys
+    sys.path.append("D:/Target/Directory/geo-utils/")  # Of course: replace "D:/Target/Directory/", e.g., with  r'' + os.path.abspath('')
 
 2. Import ``geo_utils``:
 
 .. code:: python
 
-   import geo_utils.geo_utils as gu
+    import geo_utils.geo_utils as gu
 
 
 Example
@@ -63,16 +63,16 @@ Example
 
 .. code:: python
 
-   import geo_utils as gu
-   raster, array, geo_transform = gu.raster2array("/sample-data/froude.tif")
-   type(raster)
-   <class 'osgeo.gdal.Dataset'>
-   type(array)
-   <class 'numpy.ndarray'>
-   type(geo_transform)
-   <class 'tuple'>
-   print(geo_transform)
-   (6748604.7742, 3.0, 0.0, 2207317.1771, 0.0, -3.0)
+    import geo_utils as gu
+    raster, array, geo_transform = gu.raster2array("/sample-data/froude.tif")
+    type(raster)
+    <class 'osgeo.gdal.Dataset'>
+    type(array)
+    <class 'numpy.ndarray'>
+    type(geo_transform)
+    <class 'tuple'>
+    print(geo_transform)
+    (6748604.7742, 3.0, 0.0, 2207317.1771, 0.0, -3.0)
 
 
 Requirements
