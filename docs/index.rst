@@ -66,13 +66,13 @@ Example
     import geo_utils as gu
     raster, array, geo_transform = gu.raster2array("/sample-data/froude.tif")
     type(raster)
-    <class 'osgeo.gdal.Dataset'>
+    # >>> <class 'osgeo.gdal.Dataset'>
     type(array)
-    <class 'numpy.ndarray'>
+    # >>> <class 'numpy.ndarray'>
     type(geo_transform)
-    <class 'tuple'>
+    # >>> <class 'tuple'>
     print(geo_transform)
-    (6748604.7742, 3.0, 0.0, 2207317.1771, 0.0, -3.0)
+    # >>> (6748604.7742, 3.0, 0.0, 2207317.1771, 0.0, -3.0)
 
 
 Requirements

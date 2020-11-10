@@ -68,7 +68,6 @@ intersphinx_mapping = {
 
 html_theme = 'sphinx_book_theme'
 html_theme_options = {
-    'logo_only': True,
     'launch_buttons': {
                         'binderhub_url': 'https://mybinder.org',
                         'collapse_navigation': False},
