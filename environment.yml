@@ -1,0 +1,23 @@
+name: geo_utils
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.8
+  - pip
+  # scientific python
+  - numpy
+  - pandas
+  # plotting
+  - matplotlib
+  - plotly
+  # geospatial python
+  - alphashape
+  - gdal
+  - geopandas
+  - geojson
+  - pyshp
+  - rasterio
+  - rasterstats
+  - shapely

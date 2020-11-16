@@ -6,5 +6,4 @@ gdal
 geopandas
 alphashape
 pyshp
-fiona
 geojson
